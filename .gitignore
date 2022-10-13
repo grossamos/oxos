@@ -1,2 +1,8 @@
 bin/
 .direnv/
+dispositionspapier/*.fdb_latexmk
+dispositionspapier/*.aux
+dispositionspapier/*.dvi
+dispositionspapier/*.pdf
+dispositionspapier/*.fls
+dispositionspapier/*.log

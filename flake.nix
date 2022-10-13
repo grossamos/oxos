@@ -12,18 +12,29 @@
   {
 
     defaultPackage.x86_64-linux = 
-    with import nixpkgs { system = "x86_64-linux"; };
-    stdenv.mkDerivation {
-      name = "hello";
-      src = self;
-    };
-    devShell = forAllSystems(system: 
-      nixpkgsFor.${system}.mkShell {
-        buildInputs = [ 
-          nixpkgsFor.${system}.qemu
-          nixpkgsFor.${system}.xz
+      with import nixpkgs { system = "x86_64-linux"; };
+      stdenv.mkDerivation {
+        name = "hello";
+        src = self;
+      };
+      devShell = forAllSystems(system: 
+        nixpkgsFor.${system}.mkShell {
+          buildInputs = [ 
+            nixpkgsFor.${system}.qemu
+            nixpkgsFor.${system}.xz
+          ];
+        }
+      ); 
+
+    dispositionPackage =
+      with import nixpkgs { system = "x86_64-linux"; };
+      stdenv.mkDerivation {
+        name = "disposition";
+        src = ./dispositionspapier;
+        buildInputs = [
+          nixpkgsFor.${system}.coreutils
+          nixpkgsFor.${system}.tex
         ];
-      }
-    ); 
+      };
   };
 }
