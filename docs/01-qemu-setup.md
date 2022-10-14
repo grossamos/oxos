@@ -29,6 +29,50 @@ sudo qemu-system-arm \
 - running qemu suceeded:
 ![qemu with raspbian](./images/rasbian_qemu_custom_kernel.png)
 
+## Step 2: Qemu runner from tutorial
+- copying qemu configuration from <https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/master/01_wait_forever/Makefile>
+- ended up at:
+```bash
+qemu-system-aarch64 -M raspi3b -d in_asm -display none
+```
+- `-d in_asm` shows the current instructions being executed
+
+## Step 3: Basic tutorial from osdev wiki
+- follwing tutorial from <https://wiki.osdev.org/Raspberry_Pi_Bare_Bones>
+### Substep A: Creating a c cross compiler
+- follwing tutorial from <https://wiki.osdev.org/GCC_Cross-Compiler>
+- download dependencies (see flake)
+- download source code
+    - <https://ftp.gnu.org/gnu/binutils/>
+    - <https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/>
+
+- build binutils
+```bash
+export PREFIX="$PWD/out"
+export TARGET=arm-none-eabi
+export PATH="$PREFIX/bin:$PATH"
+mkdir build-binutils
+cd build-binutils
+../binutils-2.39/configure --target=$TARGET --prefix="$PREFIX" --with-sysroot --disable-nls --disable-werror
+make 
+make install
+```
+- build gcc
+```bash
+which -- $TARGET-as || echo $TARGET-as is not in the PATH
+cd ..
+mkdir build-gcc
+cd build-gcc
+../gcc-x.y.z/configure --target=$TARGET --prefix="$PREFIX" --disable-nls --enable-languages=c,c++ --without-headers
+make all-gcc
+make all-target-libgcc
+make install-gcc
+make install-target-libgcc
+```
+
+## Substep B: Basic Assembler loop
+- 
+
 
 ## Current Status
 

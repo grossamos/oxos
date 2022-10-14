@@ -22,7 +22,17 @@
           buildInputs = [ 
             nixpkgsFor.${system}.qemu
             nixpkgsFor.${system}.xz
+            nixpkgsFor.${system}.gcc
+            nixpkgsFor.${system}.bison
+            nixpkgsFor.${system}.flex
+            nixpkgsFor.${system}.gmp
+            nixpkgsFor.${system}.libmpc
+            nixpkgsFor.${system}.mpfr
+            nixpkgsFor.${system}.texinfo
+            nixpkgsFor.${system}.cloog
+            nixpkgsFor.${system}.isl
           ];
+          hardeningDisable = [ "all" ];
         }
       ); 
 
