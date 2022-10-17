@@ -70,9 +70,14 @@ make install-gcc
 make install-target-libgcc
 ```
 
-## Substep B: Basic Assembler loop
-- 
-
+## Substep B: GNU Assembler Basics
+- different sections `.text` (code) `.data` (data)
+- for linker to see `_start` we need to put it in the `.global` system table
+- assemble and link file with:
+```bash
+as -o gnu_as_hello_world.o gnu_as_hello_world.s
+ld -o gnu_as_hello_world gnu_as_hello_world.o
+```
 
 ## Current Status
 

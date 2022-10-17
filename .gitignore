@@ -6,3 +6,5 @@ dispositionspapier/*.dvi
 dispositionspapier/*.pdf
 dispositionspapier/*.fls
 dispositionspapier/*.log
+etc/assembly/gnu_as_hello_world
+etc/assembly/gnu_as_hello_world.o
