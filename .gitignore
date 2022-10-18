@@ -8,3 +8,9 @@ dispositionspapier/*.fls
 dispositionspapier/*.log
 etc/assembly/gnu_as_hello_world
 etc/assembly/gnu_as_hello_world.o
+etc/arm_assembly/hello
+etc/arm_assembly/hello.o
+etc/init_pi3/boot
+etc/init_pi3/boot.o
+
+

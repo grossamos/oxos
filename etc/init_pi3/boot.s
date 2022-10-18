@@ -5,7 +5,9 @@
     .org 0x8000 // skip to address 0x8000
 
 _start:
-    mov 0x99, %r1
+    mov r1, $0x99
 loop:
-    mov #0x99, %r2
+    add r2, $1
+    add r2, $1
+    add r2, $1
     b loop

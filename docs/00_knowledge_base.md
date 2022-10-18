@@ -63,8 +63,22 @@
 - thumb is basically a compact version of the regular instruction set
 - thum uses 16 bit shorthands for the 32 bit arm commands
 
+#### Structure of instruction
+- 31-28: Condition
+- 27-25: Operand type 
+- 24-21: Opcode
+- 20: Set condition code (indicate if it should update the CPSR)
+- 19-16: Operand register
+- 15-12: Destination Register
+- 11-0: Immediate operand (for constants and stuff)
+
+- instructions take three clock cycles to execute but are parallelised with a pipeline -> takes one clock cycle per instruction
+
 ## GNU Assembler
-- format of instructions
+- format of instructions: `label opcode operands`
 ```bash
 mov $0, %vax
 ```
+
+- we have a `arm-none-eabi` compiler, which is designed to run its programms as a operating system
+- the `arm-linux-gnueabihf` compiler can be used for creating programms for linux
