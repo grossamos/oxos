@@ -158,7 +158,14 @@ loop:
 ...
 .endr
 ```
+- loading is done via `LDR{type} RD, =label`
+- type can be: `B`, `SB`, `H`, `SH` or empty for word
+- you can also load via register indexing: `LDR{type}, RD [RS, $N]` loads what is in RS + $N to RD 
+- this can also be done with two registers `LDR{type}, RD [R1, R2]`
+- wrighting is done by ending it in a `!`, ex. `LDR R2 [R1, R3, LSL $2]!`
 
+### Raspberry pi specifics
+- ARMv7-A conatins special store multiple increment after (stmia) operations that can be used to store bigger chunks of data
 
 ## GNU Assembler
 - format of instructions: `label opcode operands`
@@ -168,6 +175,7 @@ mov $0, %vax
 
 - we have a `arm-none-eabi` compiler, which is designed to run its programms as a operating system
 - the `arm-linux-gnueabihf` compiler can be used for creating programms for linux
+
 
 ## GDB
 - run qemu with the `-s -S` flags
@@ -185,3 +193,6 @@ mov $0, %vax
 - step `s`
 - continue `c`
 - delete breakpoint n `delete n`
+
+## Current commands
+- compile with `arm-none-eabi-gcc -o boot.o -c boot.s -g -mcpu=cortex-a7 -ffreestanding -fpic`

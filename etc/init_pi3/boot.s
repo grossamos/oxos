@@ -11,16 +11,25 @@ _start:
     cmp r5, $0
     bne halt
 
-    // setup the stack
-    // ldr r5, =_start
+    // setup the stack (code starts at 0x8000, we want the stuff below)
+    ldr r5, =_start
+    mov sp, r5
 
+    // clear out the block starting segment (segment with statically allocated variables)
+    ldr r4, =__bss_start
+    ldr r5, =__bss_end
+    mov r6, $0
+    b clear_check
+clear:
+    ldr r6, [r4]!
+    add r4, $1
+clear_check:
+    cmp r4, r5
+    blo clear
 
-    mov r1, $0x99
-loop:
-    add r2, $1
-    add r2, $1
-    add r2, $1
-    b loop
+    // start mail kernel
+    ldr r3, =kernel_main
+    blx r3
 
 
 halt:
