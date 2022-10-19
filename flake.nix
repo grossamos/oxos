@@ -31,6 +31,7 @@
             nixpkgsFor.${system}.texinfo
             nixpkgsFor.${system}.cloog
             nixpkgsFor.${system}.isl
+            nixpkgsFor.${system}.gdb
           ];
           hardeningDisable = [ "all" ];
         }
