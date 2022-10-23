@@ -70,7 +70,7 @@ make install-gcc
 make install-target-libgcc
 ```
 
-## Substep B: GNU Assembler Basics
+### Substep B: GNU Assembler Basics
 - different sections `.text` (code) `.data` (data)
 - for linker to see `_start` we need to put it in the `.global` system table
 - assemble and link file with:
@@ -78,6 +78,27 @@ make install-target-libgcc
 as -o gnu_as_hello_world.o gnu_as_hello_world.s
 ld -o gnu_as_hello_world gnu_as_hello_world.o
 ```
+
+### Substep C: Getting c to run
+- created assember programm (see `boot.s` in `etc/init_pi`)
+- created basic while loop with kernel main loop (see `kernel.o` in `etc/init_pi`)
+- linked it all together with some linking magic
+- for commands see makefile
+- notes:
+    - currently the 0 initialization of the bss doesn't seem to work and it is unclear why it needs to be 0 initialized
+
+### Substep D: Getting rust to run
+- get cargo:
+```bash
+cargo install xargo
+
+xargo new kernel
+cd kernel
+rustup override set nightly
+```
+- then compiled programm (see makefile) and let it run in qemu
+- had problem with it not allowing me to change variables in loops? wierd
+- 
 
 ## Current Status
 

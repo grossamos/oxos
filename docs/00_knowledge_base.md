@@ -193,6 +193,8 @@ mov $0, %vax
 - step `s`
 - continue `c`
 - delete breakpoint n `delete n`
+- get functions with `i functions`
+- get the value of a variable x with `print x`
 
 ## Current commands
 - compile with `arm-none-eabi-gcc -o boot.o -c boot.s -g -mcpu=cortex-a7 -ffreestanding -fpic`
