@@ -69,6 +69,7 @@ make all-target-libgcc
 make install-gcc
 make install-target-libgcc
 ```
+- when getting an error about format string litterals, its a nix issue (see <https://github.com/riscv-collab/riscv-gnu-toolchain/issues/901>)
 
 ### Substep B: GNU Assembler Basics
 - different sections `.text` (code) `.data` (data)
@@ -99,6 +100,26 @@ rustup override set nightly
 - then compiled programm (see makefile) and let it run in qemu
 - had problem with it not allowing me to change variables in loops? wierd
 - 
+
+### Substep E: getting qemu-system-aarch64
+- recompile gcc: see above, just for aarch64-elf 
+- compile assemble with:
+```bash
+aarch64-elf-as -c src/boot.s -o target/asm/boot.o -g
+aarch64-elf-ld -o target/asm/boot ./target/asm/boot.o -g
+
+qemu-system-aarch64 -M raspi3b -nographic -kernel target/asm/boot -s -S
+```
+- cross compile rust with: (might have to install the target with rustup first)
+```bash
+export RUSTFLAGS="-C linker=aarch64-elf-ld -O"
+cargo build --target aarch64-unknown-linux-gnu
+```
+- then linked against the bootstrapping code:
+```bash
+aarch64-elf-gcc -T src/linker.ld -o target/oxos.elf -ffreestanding -O2 -nostdlib target/asm/boot.o target/aarch64-unknown-linux-gnu/debug/liboxos.rlib -g
+```
+- that loop issue was due to optimisations, we can easily fix it by adding `-O` to our RUSTFLAGS (or maybe not, cause now were just optimising it out i guess?)
 
 ## Current Status
 

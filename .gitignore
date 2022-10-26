@@ -17,3 +17,8 @@ etc/init_pi3/boot.o
 **/*.elf
 
 
+
+
+# Added by cargo
+
+/target
