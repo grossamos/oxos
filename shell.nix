@@ -1,13 +1,29 @@
-{ pkgs ? import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/b7d8c687782c8f9a1d425a7e486eb989654f6468.tar.gz") {} }:
-  pkgs.mkShell {
-    nativeBuildInputs = with pkgs.buildPackages; [ 
-      pkgs.gcc-arm-embedded-9
-      pkgs.libmpc
-      pkgs.gmp
-      pkgs.mpfr
-    ];
+let
+  moz_overlay = import (builtins.fetchTarball https://github.com/mozilla/nixpkgs-mozilla/archive/master.tar.gz);
+  nixpkgs = import <nixpkgs> { overlays = [ moz_overlay ]; };
+in
+  with nixpkgs;
+  stdenv.mkDerivation {
+    name = "moz_overlay_shell";
     buildInputs = [
-      pkgs.gdb
+      ((nixpkgs.rustChannelOf { date = "2022-10-28"; channel = "nightly"; }).rust.override (old:
+        { 
+          extensions = ["rust-src" "rust-analysis"]; 
+          targets = [ "aarch64-unknown-linux-gnu" ];
+        }
+      ))
+      gdb
+      rustup
+    ];
+    nativeBuildInputs = with pkgs.buildPackages; [ 
+      gcc-arm-embedded-9
+      libmpc
+      gmp
+      mpfr
     ];
     hardeningDisable = [ "all" ];
-}
+    shellHook = ''
+      export PATH="$PWD/bin/gcc/out/bin:$PATH"
+    '';
+  }
+

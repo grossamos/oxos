@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 
 [build]
+rustflags ="-C linker=aarch64-elf-ld -O"
 target="aarch64-unknown-linux-gnu"
 
 [profile.dev]

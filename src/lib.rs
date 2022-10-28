@@ -1,13 +1,18 @@
 #![no_std]
 #![no_main]
+#![feature(core_intrinsics)]
+#![feature(stdsimd)]
 
 use core::panic::PanicInfo;
 
+mod uart;
+mod utils;
+
 #[no_mangle]
 pub extern fn kernel_main() {
-    let mut variable = 1;
+    uart::uart_init();
+
     loop {
-        variable += 1;
     }
 }
   

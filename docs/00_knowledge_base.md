@@ -166,6 +166,17 @@ loop:
 
 ### Raspberry pi specifics
 - ARMv7-A conatins special store multiple increment after (stmia) operations that can be used to store bigger chunks of data
+- it supports MMIO 
+
+## Peripherals
+- reading on specifics of peripherals <https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf> and <https://github.com/s-matyukevich/raspberry-pi-os/blob/master/docs/lesson01/rpi-os.md>
+- when talking about a serial port we usually mean a `RS-232` serial port
+- pins 8 and 10 (aka. GPIO pins 14, 15) transmit and recieve these in the raspberry pis
+- the rpi 3b+ uses the BCM2837 board
+- the BCM2837 is able to memory map all peripherals since it is an SOC
+- range is from `0x3F000000` to `0x3FFFFFFF` for memory mapped peripherals (it mapps to `0x7E000000`)
+- to use a device write in its 32 bit register (region of memory)
+- UART is a basic serial hardware device that sends bytes individually
 
 ## GNU Assembler
 - format of instructions: `label opcode operands`

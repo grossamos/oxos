@@ -102,6 +102,7 @@ rustup override set nightly
 - 
 
 ### Substep E: getting qemu-system-aarch64
+- note: we clear the bss segment, since the c standard requires it!
 - recompile gcc: see above, just for aarch64-elf 
 - compile assemble with:
 ```bash
