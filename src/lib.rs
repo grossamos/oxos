@@ -5,12 +5,15 @@
 
 use core::panic::PanicInfo;
 
+use uart::{uart_init, uart_send};
+
 mod uart;
 mod utils;
 
 #[no_mangle]
 pub extern fn kernel_main() {
-    uart::uart_init();
+    uart_init();
+    uart_send('A');
 
     loop {
     }
