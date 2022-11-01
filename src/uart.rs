@@ -66,7 +66,8 @@ pub fn uart_init() {
 
 pub fn uart_send(letter: char) {
     unsafe {
-        while volatile_load(AUX_MU_LSR_REG as *const u32) > 0 {}
+        // wait while FIFO is full
+        while volatile_load(AUX_MU_LSR_REG as *const u32) & 0x0001 == 1 {}
         volatile_store(AUX_MU_IO_REG as *mut u32, letter as u32);
     }
 

@@ -16,7 +16,6 @@ in
       rustup
     ];
     nativeBuildInputs = with pkgs.buildPackages; [ 
-      gcc-arm-embedded-9
       libmpc
       gmp
       mpfr
