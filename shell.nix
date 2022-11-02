@@ -14,11 +14,17 @@ in
       ))
       gdb
       rustup
+      bison
+      flex
+      gmp
+      libmpc
+      mpfr
+      texinfo
+      cloog
+      isl
     ];
     nativeBuildInputs = with pkgs.buildPackages; [ 
-      libmpc
-      gmp
-      mpfr
+      gcc12
     ];
     hardeningDisable = [ "all" ];
     shellHook = ''
