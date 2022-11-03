@@ -12,8 +12,12 @@ mod utils;
 
 #[no_mangle]
 pub extern fn kernel_main() {
+    let message = "Hello World! It'sa me Amosio!\n";
+
     uart_init();
-    uart_send('A');
+    for letter in message.chars() {
+        uart_send(letter)
+    }
 
     loop {
     }
