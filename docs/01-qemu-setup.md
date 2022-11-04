@@ -123,6 +123,13 @@ aarch64-elf-gcc -T src/linker.ld -o target/oxos.elf -ffreestanding -O2 -nostdlib
 ```
 - that loop issue was due to optimisations, we can easily fix it by adding `-O` to our RUSTFLAGS (or maybe not, cause now were just optimising it out i guess?)
 
+## Step 4: Get UART hello world
+- created init code or mini uart (works with MMIO)
+- wrote a simple programm that writes letters to the port via its polling algorithm
+- had to use a special qemu command to get mini uart to work (regular uart works fine with default `-serial stdio` config)
+- qemu command used: `qemu-system-aarch64 -M raspi3b -kernel target/oxos.elf -nographic -serial null -chardev stdio,id=uart1 -serial chardev:uart1 -monitor none`
+- and tada it actually worked! (see screenshot)
+
 ## Current Status
 
 - Attepting to run iso in qemu results in black screen:

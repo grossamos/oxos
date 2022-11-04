@@ -9,15 +9,14 @@ use uart::{uart_init, uart_send};
 
 mod uart;
 mod utils;
+mod framebuffer;
 
 #[no_mangle]
 pub extern fn kernel_main() {
     let message = "Hello World! It'sa me Amosio!\n";
 
     uart_init();
-    for letter in message.chars() {
-        uart_send(letter)
-    }
+    uart_send(message);
 
     loop {
     }

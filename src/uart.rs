@@ -63,7 +63,13 @@ pub fn uart_init() {
     }
 }
 
-pub fn uart_send(letter: char) {
+pub fn uart_send(message: &str) {
+    for letter in message.chars() {
+        uart_send_letter(letter);
+    }
+}
+
+fn uart_send_letter(letter: char) {
     unsafe {
         // wait while FIFO is full
         while read_volatile(AUX_MU_LSR_REG as *const u32) & 0x20 != 0x20 {}

@@ -178,6 +178,34 @@ loop:
 - to use a device write in its 32 bit register (region of memory)
 - UART is a basic serial hardware device that sends bytes individually
 
+## Framebuffer
+- no video core text mode is supported (this is a legacy feature, rpi boards are too new) (see <https://forums.raspberrypi.com/viewtopic.php?t=202680>)
+- documentation on the Framebuffer and mailboxes can be found here <https://github.com/raspberrypi/firmware/wiki> (it's shit)
+- there are two mailboxes:
+    - 0: VC -> ARM (never write to this one)
+    - 1: ARM -> VC (never read from this one)
+- reading from a mailbox goes as follows:
+    - read status register until its flag is not set
+    - read data from the register
+    - if lower bits don't match the channel -> an issue occured, maybe retry
+    - the upper 28 bits are returned data
+- a mailbox command works by writing the upper 28 bits of an address (thus has to be 16 bit alligned) to a register along with the channel in the lower 4
+    - the address then contains the command (and tags)
+    - we will use channel 8 (the properties tag)
+- a mailbox command is structured as follows: (for request)
+    - u32: buffersize (in bytes)
+    - u32: of zeros
+    - u8...: list of tags (can be longer than 8 bits!)
+    - u32: of zeros
+    - u8...: padding 
+- a tag is structured as follows: (for request)
+    - u32: tag identifier
+    - u32: value buffer size (in bytes)
+    - u32: of zeros (bit 32 indicates if its a request or not)
+    - u8...: value buffer
+    - u8...: padding to align to 32 bits
+
+
 ## GNU Assembler
 - format of instructions: `label opcode operands`
 ```bash
