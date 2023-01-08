@@ -3,50 +3,103 @@
 
 \title{Dispositionspapier zur Studienarbeit\\Implementierung einer Kernel für Tic-tac-toe}
 \author{ Amos Groß }
-\date{13.10.2023}
+\date{9.10.2023}
 
 \begin{document}
 
 \maketitle
 
 \section{Kurzbeschreibung der Arbeit}
-Worum geht es in der Arbeit? 
-% In dieser Arbeit soll eine Betriebssystem-Kernel entwickelt werden, welche die Grundlegenden Fähigkeiten besitzt um das Spiel "Tic-tac-toe" zu spielen.
-% Die Kernel soll in Rust geschrieben werden und auf einem Raspberry Pi lauffähig sein.
-Wie ist die (aktuelle) Ausgangssituation? 
-% Die Kernel soll von Grund auf implementiert werden.
-% Ausgang des Projektes ist daher keine bestehende Code-Basis.
 
-% Notes:
-% Habe einen Raspberry pi + knöpfe für GPIO eingaben auf dem das betriebssytem laufen soll.
-% Es gibt keine bestehende code basis auf der das betriebssytem aufbaut
+Tic-Tac-Toe ist einer der simpelsten Spiele, die es gibt.
+Mit wenigen Regeln, einem einfachen Ablauf und einem unkomplizierten Spielfeld ist es ein beliebtes Projekt um Neueinsteigern das Programmieren beizubringen.
+Nahezu all diese Projekte bauen auf Abstraktionen der Laufzeitumgebungen auf.
+So müssen Programmierer nicht selbst Ein- und Ausgabemechanismen implementieren, sondern können ihre Tic-Tac-Toe Programme auf Funktionalitäten des Betriebssystems aufbauen.
+Es stellt sich jedoch die Frage, wie schwierig es wäre ein Tic-Tac-Toe Programm ohne diese Hilfen zu implementieren.
+Die Studienarbeit wird sich mit genau diesem Thema befassen.
+In der Arbeit soll eine einfache Kernel implementiert werden, auf welcher das Spiel laufen kann. 
 
-Welches Themenfeld wird bearbeitet? 
-% Notes:
-% Betriebssysteme und Rechnerarchitekturen
-
-Welche Problemstellung soll angegangen werden? 
-% IDK, schauen ob auf dem betriebssytem tic tac toe laufen kann?
-
-Welche Grundlagen müssen vorhanden sein und welche Randbedingungen sind gegeben? 
-% Grundlagen um ARM, Betriebssysteme
-
-Welche Zielsetzungen gibt es in dieser Arbeit? 
-Welche methodische Vorgehensweise wird gewählt?  
-
-Dies soll möglichst in einem Fließtext dokumentiert werden. Idealerweise abschließend mit sehr konkreten Zielbeschreibungen, die auch validierbar sind.
+Die in der Arbeit entwickelte Kernel soll von Grund auf entwickelt werden und nicht auf einer bestehenden Kernel basieren.
+So weit wie möglich soll der dafür produzierte Quellcode in der Programmiersprache Rust geschrieben werden.
+Als Testumgebung für die Kernel soll ein Raspberry Pi dienen (virtualisiert bzw. so weit wie möglich auch physisch).
+Bei der Implementierung der Kernel soll beantwortet werden, wie eine Kernel für den Anwendungsfall simpler Spiele designt werden kann.
+Dabei soll analysiert werden, inwiefern es sich lohnt für solche Anwendungsfälle eigene Kernels zu schreiben.
+Ziel der Arbeit ist es eine lauffähige Kernel zu entwickeln und darauf Tic-Tac-Toe zu spielen.
 
 
 \section{Gliederung und Zeitplan}
-<Identifikation der wesentlichen Arbeitsschritte. Meilensteinplan. Konsequenzen
-und Möglichkeiten der Meilensteine. Zeitplan bis zur Beendigung des praktischen
-Teils sowie der Dokumentation.> <Eine erste Gliederung der Arbeit. Benennung von
-Kapiteln und Unterkapiteln. Dies gilt als Leitfaden, noch nicht als abschließend.>
+
+Bei der Bearbeitung der Arbeit wird ein iteratives Vorgehen gewählt.
+Arbeitseinheiten werden kleinschrittig geplant und nach jeder Iteration neu evaluiert.
+Ein solcher Ansatz wird gewählt, da durch die komplexe Eigenschaft der Systemprogrammierung Arbeitsschritte schwierig einzuschätzen sind.
+Nicht desto trotz soll im Folgenden ein mögliches Vorgehen skizziert werden.
+Als Erstes soll eine "Hello World" Kernel implementiert werden. 
+Hier soll die Toolchain und ein initialer Boot Prozess für die Kernel erstellt werden.
+Zweitens soll ein Grafiktreiber implementiert werden.
+Zielführend soll es hierbei sein Text auf einem Bildschirm ausgeben zu können.
+Drittens soll eine primitive Texteingabe möglich gemacht werde, entweder durch GPIO Knöpfe oder einer UART Schnittstelle.
+Viertens soll ein einfacher Programmlader entwickelt werden, der Programme zum bringt.
+Letztlich soll das Tic-Tac-Toe Programm entworfen werden.
+Hiermit kann die Kernel anschließend evaluiert werden.
+Falls hiernach noch Zeit übrig bleibt kann die Kernel um weitere Features, wie Multithreading, erweitert werden.
+
+Ein möglicher Zeitplan für das Eben skizzierte Vorhaben könnte wie folgt strukturiert sein:
+
+\vspace*{0.5cm}
+
+\begin{tabular}{|c|c|}
+    \hline
+    \textbf{Arbeitsschritt} & \textbf{Geplanter Bearbeitungszeitraum} \\ \hline
+    Hello World & Oktober - November 2022 \\
+    Graphiktreiber & Dezember 2022 - Januar 2023 \\
+    Texteingabe & Februar 2023 \\
+    Programmlader & Anfang März 2023 \\
+    Tic-Tac-Toe & Ende März 2023 \\
+    Schreiben der Dokumentation & April - Mai 2023 \\
+    \hline
+\end{tabular}
+
+\vspace*{0.5cm}
+
+Die Struktur der Arbeit wird sich im Großteil an der Arbeitsreihenfolge bei der Implementierung orientieren.
+Eine mögliche Struktur könnte daher wie folgt aussehen:
+
+\begin{enumerate}
+    \item Einleitung
+    \item Hintergrund
+    \begin{enumerate}
+    \item ARM
+    \item Betriebssystemtheorie (Kernel, Programmlader, etc.)
+    \item Virtualisierung
+    \item Rust, Assembly, C
+    \end{enumerate}
+    \item Hauptteil
+    \begin{enumerate}
+    \item Toolchain
+    \item Boot Prozess
+    \item Grafikausgabe
+    \item Eingabetreiber
+    \item Programmlader
+    \item Potentielle Erweiterungen
+\end{enumerate}
+    \item Evaluierung
+    \begin{enumerate}
+        \item Test der Kernel mit dem Tic-Tac-Toe Programm
+        \item Evaluierung der Eignung der Kernel für den Anwendungsfall
+        \item Lohnt sich die Implementierung in einer dedizierten Kernel?
+    \end{enumerate}
+    \item Fazit
+\end{enumerate}
 
 \section{Grundlegende Literatur}
-<Belegen der Ausgangssituation. Wer hat auf ähnlichem Themenfeld bereits
-gearbeitet? Wie passt die Studienarbeit in die aktuelle wissenschaftliche
-Landschaft und was ist neu (dies wird oben dargelegt und hier belegt). Was wird
-durch die erstellte Lösung verbessert und wie wird dies nachgewiesen?>
+
+Die Arbeit kann in das Themenfeld von Rechnerarchitekturen und Betriebssystemen eingeordnet werden.
+Beide Felder Besitzen eine gute Forschungsgrundlage.
+Es gibt zahlreiche Beispiele für Betriebssystemimplementierungen (bspw. Linux, BSD) und ebenso viele wissenschaftliche Arbeiten die sich mit diesem Befassen.
+In der Studienarbeit wird für die Theorie hinter Betriebssystemen überwiegend das Buch "Modern Operating Systems" von Andrew Tannenbaum genutzt.
+Relativ neu ist hingegen die Implementierung von Betriebssystemen in Sprachen die Speicherschutzmechanismen anbieten (bspw. Rust).
+Hier gibt es zwar erste Analysen \footnote{bspw. "The Case for Writing a Kernel in Rust" (2017) von Amit Levy, Bradford Campbell, Branden Ghena, Pat Pannuto, Prabal Dutta und Philip Levis}, die Wissenslage ist hier jedoch vergleichsweise begrenzt.
+Aus diesem Grund werden in der Arbeit Konzepte aus Ressourcen wie "Writing a Simple Operating System — from Scratch" von Nick Blundell und dem "Baking Pi" Projekt der University of Cambridge übernommen und mit ARM bzw. Rust spezifischer Literatur ("The Rust Programming Language" von Steve Klabnik und Carol Nichols und "Raspberry Pi Assembly Language Programming: ARM Processor Coding" von Stephen Smith) ergänzt.
+Mithilfe dieser Ressourcen versucht die implementierte Lösung nachzuweisen, dass eine anwendungsspezifische Kernel für Tic-Tac-Toe in Rust auf dem Raspberry Pi entwickelt werden kann.
 
 \end{document}
