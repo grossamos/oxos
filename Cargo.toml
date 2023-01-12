@@ -7,9 +7,13 @@ edition = "2021"
 
 [dependencies]
 
+[dependencies.compiler_builtins]
+git = "https://github.com/rust-lang/compiler-builtins"
+#features = ["c"]
+
 [build]
 rustflags ="-C linker=aarch64-elf-ld -O"
-target="aarch64-unknown-linux-gnu"
+target="aarch64-unknown-none"
 
 [profile.dev]
 panic = "abort"
