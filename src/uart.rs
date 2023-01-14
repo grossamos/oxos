@@ -1,12 +1,6 @@
 use core::ptr::{write_volatile, read_volatile};
 
-use crate::utils::wait_for_n_cycles;
-
-// would be 0xFE000000 for raspberry pi 4
-const MMIO_BASE:            u32 = 0x3F000000;
-const GPFSEL1:              u32 = MMIO_BASE + 0x00200004;
-const GPPUD:                u32 = MMIO_BASE + 0x00200094;
-const GPPUDCLK0:            u32 = MMIO_BASE + 0x00200098;
+use crate::{utils::wait_for_n_cycles, gpio::{MMIO_BASE, GPFSEL1, GPPUD, GPPUDCLK0}};
 
 const AUX_ENABLES:          u32 = MMIO_BASE + 0x00215004;
 const AUX_MU_CNTL_REG:      u32 = MMIO_BASE + 0x00215060;

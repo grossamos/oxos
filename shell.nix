@@ -9,7 +9,7 @@ in
       ((nixpkgs.rustChannelOf { date = "2022-10-28"; channel = "nightly"; }).rust.override (old:
         { 
           extensions = ["rust-src" "rust-analysis"]; 
-          targets = [ "aarch64-unknown-linux-gnu" ];
+          targets = [ "aarch64-unknown-none" ];
         }
       ))
       gdb
@@ -22,6 +22,7 @@ in
       texinfo
       cloog
       isl
+      vale
     ];
     nativeBuildInputs = with pkgs.buildPackages; [ 
       gcc12

@@ -3,5 +3,13 @@
 version = 3
 
 [[package]]
+name = "compiler_builtins"
+version = "0.1.83"
+source = "git+https://github.com/rust-lang/compiler-builtins#8d3af6134289a10ed5b394d13d28012dc2a06d0c"
+
+[[package]]
 name = "oxos"
 version = "0.1.0"
+dependencies = [
+ "compiler_builtins",
+]

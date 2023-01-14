@@ -6,6 +6,7 @@ dispositionspapier/*.dvi
 dispositionspapier/*.pdf
 dispositionspapier/*.fls
 dispositionspapier/*.log
+dispositionspapier/*.synctex.gz
 etc/assembly/gnu_as_hello_world
 etc/assembly/gnu_as_hello_world.o
 etc/arm_assembly/hello
@@ -15,6 +16,7 @@ etc/init_pi3/boot.o
 **/*.o
 **/*.img
 **/*.elf
+a.out
 
 
 
