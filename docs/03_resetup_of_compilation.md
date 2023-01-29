@@ -34,3 +34,4 @@
 - `ESR_EL3` = 0x96000040
     - `EC` = first six bits aka 0b100101 => "Data Abort taken without a change in Exception level." causes include MMU faults and data alignment
     - `ISS` (bits 24-5) => WnR is 0b1 meaning abort from reading
+- Stellt sich herraus, es war tatsächlich ein alignment problem => statt 16 bit align habe ich 32 gebraucht, FML
