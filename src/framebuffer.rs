@@ -1,6 +1,6 @@
 use core::ptr::{read_volatile, write_volatile};
 
-use crate::{gpio::MMIO_BASE, utils::wait_for_n_cycles};
+use crate::{gpio::MMIO_BASE, utils::wait_for_n_cycles, uart::uart_send};
 
 const VIDEOCORE_MBOX: u32 = MMIO_BASE + 0x0000B880;
 const MBOX_READ: u32 = VIDEOCORE_MBOX + 0x0;
@@ -18,8 +18,8 @@ struct Mbox {
 impl Mbox {
     fn new() -> Mbox {
         return Mbox { 
-            //buffer: [0; 36],
-            buffer: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
+            buffer: [0; 36],
+            //buffer: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
         }
     }
 
@@ -110,19 +110,53 @@ impl Framebuffer {
         mbox.buffer[35] = 0;
 
         mbox.send(8);
-
-        Framebuffer {
+        
+        // temporarily save framebuffer 
+        let fb = Framebuffer {
             width: mbox.buffer[5],
             height: mbox.buffer[6],
             pitch: mbox.buffer[33],
             is_rgb: mbox.buffer[19] == 1,
             address: mbox.buffer[28] & 0x3FFFFFFF,
-        }
+        };
+
+        uart_send("Read Framebuffer");
+
+        fb
     }
 
-   pub fn draw_pixel(&self, _x: u32, _y: u32) {
+   pub fn draw_pixel(&self, x: u32, y: u32) {
        unsafe {
-           write_volatile(self.address as *mut u32, 0xFFFFFF)
+           let offset = y * self.pitch + x * 4;
+           write_volatile((self.address + offset) as *mut u32, 0xFFFFFF);
+           //write_volatile(self.address as *mut u32, 0x0000FF);
+      }
+   }
+
+   pub fn draw_hello(&self) {
+       for i in 50..200 {
+            self.draw_pixel(50, i);
+            self.draw_pixel(70, i);
+       }
+
+       for i in 45..75 {
+           self.draw_pixel(i, 100);
+       }
+
+       for i in 50..70 {
+           self.draw_pixel(90, i);
+       }
+
+       for i in 80..200 {
+           self.draw_pixel(90, i);
+       }
+
+       for i in 50..150 {
+           self.draw_pixel(110, i);
+       }
+
+       for i in 170..200 {
+           self.draw_pixel(110, i);
        }
    }
 }

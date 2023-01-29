@@ -1,3 +1,3 @@
-file ./target/oxos.elf
+file ./target/aarch64-unknown-none-softfloat/debug/kernel
 target remote localhost:1234
-b src/uart.rs:73
+break kernel_main
