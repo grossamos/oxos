@@ -25,7 +25,7 @@ pub extern fn kernel_main() {
     let fb = Framebuffer::new();
     //fb.draw_pixel(10, 10);
     //fb.draw_pixel(20, 20);
-    fb.draw_str("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+    fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
     uart_send("More text, did it work?");
 
     loop {

@@ -142,9 +142,9 @@ impl Framebuffer {
            //self.draw_pixel(x + (0 as u32), y + (y_index as u32), color);
            for x_index in 0..BITMAP_SIZE {
                if bitmap[y_index][x_index] {
-                   for x_padding in 0..PADDING {
-                       for y_padding in 0..PADDING {
-                           self.draw_pixel(x + (x_index as u32) * PADDING + x_padding, y + (y_index as u32) * PADDING + y_padding, color)
+                   for x_padding in 0..BIT_SIZE {
+                       for y_padding in 0..BIT_SIZE {
+                           self.draw_pixel(x + (x_index as u32) * BIT_SIZE + x_padding, y + (y_index as u32) * BIT_SIZE + y_padding, color)
                        }
                    }
                }
@@ -153,9 +153,19 @@ impl Framebuffer {
    }
 
    pub fn draw_str(&self, message: &str) {
+       let color = 0xFFFFFF;
        for letter_index in 0..message.len() {
-           //let x = (letter_index * BITMAP_SIZE) as u32 * PADDINGr* // account for
-           self.draw_bitmap(BITMAP[message.as_bytes()[letter_index] as usize - 65], (letter_index * BITMAP_SIZE) as u32 * PADDING + 10 + (letter_index as u32) * PADDING, 10, 0xFFFFFF)
+           let x = (letter_index * BITMAP_SIZE) as u32 * BIT_SIZE // account for letter size
+                        + BIT_SIZE * (letter_index as u32); // add space between letters
+        
+           match message.as_bytes()[letter_index] {
+               32 /* " " */ => self.draw_bitmap(BITMAP[26], x, BIT_SIZE, color),
+               33 /* "!" */ => self.draw_bitmap(BITMAP[27], x, BIT_SIZE, color),
+               44 /* "," */ => self.draw_bitmap(BITMAP[28], x, BIT_SIZE, color),
+               46 /* "." */ => self.draw_bitmap(BITMAP[29], x, BIT_SIZE, color),
+               65..=91 => self.draw_bitmap(BITMAP[message.as_bytes()[letter_index] as usize - 65], x, BIT_SIZE, color),
+               _ => (),
+           };
        }
    }
 
@@ -192,9 +202,9 @@ const X: bool = true;
 
 
 const BITMAP_SIZE: usize = 5;
-const PADDING: u32 = 4;
+const BIT_SIZE: u32 = 4;
 
-const BITMAP: [[[bool; BITMAP_SIZE]; BITMAP_SIZE]; 26] = [
+const BITMAP: [[[bool; BITMAP_SIZE]; BITMAP_SIZE]; 30] = [
     // A
     [
         [O, X, X, X, O],
@@ -402,5 +412,37 @@ const BITMAP: [[[bool; BITMAP_SIZE]; BITMAP_SIZE]; 26] = [
         [O, O, X, O, O],
         [O, X, O, O, O],
         [X, X, X, X, X],
+    ],
+    // [SPACE]
+    [
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+    ],
+    // !
+    [
+        [O, O, X, O, O],
+        [O, O, X, O, O],
+        [O, O, X, O, O],
+        [O, O, O, O, O],
+        [O, O, X, O, O],
+    ],
+    // ,
+    [
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, O, X, O, O],
+        [O, X, O, O, O],
+    ],
+    // .
+    [
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, O, O, O, O],
+        [O, X, X, O, O],
+        [O, X, X, O, O],
     ],
 ];
