@@ -30,6 +30,7 @@ pub extern fn kernel_main() {
     }
 }
 
+
 global_asm!(include_str!("boot.s"));
   
 #[panic_handler]

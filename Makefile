@@ -29,7 +29,7 @@ gpio-sock:
 	alias set="echo hello world"
 
 qemu: ${KERNEL_BIN} gpio-sock
-	qemu-system-aarch64 $(QEMU_ARGS) -kernel ${KERNEL_BIN} -s -S
+	qemu-system-aarch64 $(QEMU_ARGS) -kernel ${KERNEL_BIN}
 
 qemu-debug: ${KERNEL_DEBUG} gpio-sock
 	qemu-system-aarch64 $(QEMU_ARGS) -S -s -kernel ${KERNEL_DEBUG}

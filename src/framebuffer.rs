@@ -1,6 +1,6 @@
 use core::ptr::{read_volatile, write_volatile};
 
-use crate::{gpio::MMIO_BASE, utils::wait_for_n_cycles, uart::uart_send};
+use crate::{gpio::MMIO_BASE, utils::wait_for_n_cycles};
 
 const VIDEOCORE_MBOX: u32 = MMIO_BASE + 0x0000B880;
 const MBOX_READ: u32 = VIDEOCORE_MBOX + 0x0;
@@ -47,10 +47,10 @@ impl Mbox {
 
 #[repr(align(32))]
 pub struct Framebuffer {
-    width: u32,
-    height: u32,
+    _width: u32,
+    _height: u32,
     pitch: u32,
-    is_rgb: bool,
+    _is_rgb: bool,
     address: u32,
 }
 
@@ -115,10 +115,10 @@ impl Framebuffer {
         
         // temporarily save framebuffer 
         let fb = Framebuffer {
-            width: mbox.buffer[5],
-            height: mbox.buffer[6],
+            _width: mbox.buffer[5],
+            _height: mbox.buffer[6],
             pitch: mbox.buffer[33],
-            is_rgb: mbox.buffer[19] == 1,
+            _is_rgb: mbox.buffer[19] == 1,
             address: mbox.buffer[28] & 0x3FFFFFFF,
         };
 
@@ -168,38 +168,10 @@ impl Framebuffer {
            };
        }
    }
-
-   pub fn draw_hello(&self) {
-       for i in 50..200 {
-            self.draw_pixel(50, i, 0xFFFFFF);
-            self.draw_pixel(70, i, 0xFFFFFF);
-       }
-
-       for i in 45..75 {
-           self.draw_pixel(i, 100, 0xFFFFFF);
-       }
-
-       for i in 50..70 {
-           self.draw_pixel(90, i, 0xFFFFFF);
-       }
-
-       for i in 80..200 {
-           self.draw_pixel(90, i, 0xFFFFFF);
-       }
-
-       for i in 50..150 {
-           self.draw_pixel(110, i, 0xFFFFFF);
-       }
-
-       for i in 170..200 {
-           self.draw_pixel(110, i, 0xFFFFFF);
-       }
-   }
 }
 
 const O: bool = false;
 const X: bool = true;
-
 
 const BITMAP_SIZE: usize = 5;
 const BIT_SIZE: u32 = 4;
