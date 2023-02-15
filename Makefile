@@ -1,5 +1,5 @@
 RC := cargo
-RUST_SOURCES := $(shell find src -type f -iname '*.rs')
+RUST_SOURCES := $(shell find src -type f -iname '*.rs' && find src -type f -iname '*.ld' && find src -type f -iname '*.s' && echo 'Makefile')
 RUSTFLAGS := -C target-cpu=cortex-a53 -C link-arg=--script=src/linker.ld -C link-arg=--library-path=$(pwd)/src
 CARGO_OPTIONS := --target=aarch64-unknown-none-softfloat
 KERNEL_DEBUG := target/aarch64-unknown-none-softfloat/debug/kernel
@@ -7,11 +7,12 @@ KERNEL_RELEASE := target/aarch64-unknown-none-softfloat/release/kernel
 KERNEL_BIN := kernel8.img
 QEMU_ARGS := -M raspi3b -serial null -chardev stdio,id=uart1 -serial chardev:uart1 -monitor none -qtest unix:/tmp/qtest-gpio.sock
 
+
 .PHONY: all default release
 
 default: release
 all: release
-release: $(KERNEL_RELEASE)
+release: $(KERNEL_BIN)
 
 ${KERNEL_BIN}: $(KERNEL_RELEASE)
 	@RUSTFLAGS="${RUSTFLAGS}" cargo objcopy ${CARGO_OPTIONS} --release -- -O binary kernel8.img --strip-all 

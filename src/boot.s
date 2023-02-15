@@ -1,66 +1,38 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Copyright (c) 2021-2022 Andre Richter <andre.o.richter@gmail.com>
+// put code in first part of the kernel binary
+.section ".text.boot"
 
-//--------------------------------------------------------------------------------------------------
-// Definitions
-//--------------------------------------------------------------------------------------------------
+.global _start
+    .org 0x80000 // skip to address 0x80000
 
-// Load the address of a symbol into a register, PC-relative.
-//
-// The symbol must lie within +/- 4 GiB of the Program Counter.
-//
-// # Resources
-//
-// - https://sourceware.org/binutils/docs-2.36/as/AArch64_002dRelocations.html
-.macro ADR_REL register, symbol
-	adrp	\register, \symbol
-	add	\register, \register, #:lo12:\symbol
-.endm
-
-//--------------------------------------------------------------------------------------------------
-// Public Code
-//--------------------------------------------------------------------------------------------------
-.section .text._start
-
-//------------------------------------------------------------------------------
-// fn _start()
-//------------------------------------------------------------------------------
 _start:
-	// Only proceed on the boot core. Park it otherwise.
-	mrs	x0, MPIDR_EL1
-	and	x0, x0, 3
-	ldr	x1, 0      // provided by bsp/__board_name__/cpu.rs
-	cmp	x0, 0
-	b.ne	.L_parking_loop
+    // halt all cpus but cpu 0
+    mrs x5, MPIDR_EL1
+    and x5, x5, #3
+    cmp x5, #0
+    bne halt
 
-	// If execution reaches here, it is the boot core.
+    // setup the stack (code starts at 0x8000, we want the stuff below)
+    ldr x5, =_start
+    mov sp, x5
 
-	// Initialize DRAM.
-	ADR_REL	x0, __bss_start
-	ADR_REL x1, __bss_end_exclusive
+    // clear out the block starting segment (segment with statically allocated variables)
+    ldr x4, =__bss_start
+    ldr x5, =__bss_end
+    mov x6, #0
+    b clear_check
+clear:
+    ldr x6, [x4]
+    add x4, x4, #1
+clear_check:
+    cmp x4, x5
+    blo clear
 
-.L_bss_init_loop:
-	cmp	x0, x1
-	b.eq	.L_prepare_rust
-	stp	xzr, xzr, [x0], #16
-	b	.L_bss_init_loop
+    // start mail kernel
+    ldr x3, =kernel_main
+    blr x3
 
-	// Prepare the jump to Rust code.
-.L_prepare_rust:
-	// Set the stack pointer.
-	ADR_REL	x0, __boot_core_stack_end_exclusive
-	mov	sp, x0
 
-	// Jump to Rust code.
-	b	kernel_main
-
-	// Infinitely wait for events (aka "park the core").
-.L_parking_loop:
-	wfe
-	b	.L_parking_loop
-
-.size	_start, . - _start
-.type	_start, function
-.global	_start
-
+// as a failsafe
+halt:
+    wfe
+    b halt
