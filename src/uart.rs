@@ -1,6 +1,6 @@
 use core::ptr::{write_volatile, read_volatile};
 
-use crate::{utils::wait_for_n_cycles, gpio::{MMIO_BASE, GPFSEL1, GPPUD, GPPUDCLK0}};
+use crate::gpio::{MMIO_BASE, set_gpio_func, enable_gpio_pin};
 
 const AUX_ENABLES:          u32 = MMIO_BASE + 0x00215004;
 const AUX_MU_CNTL_REG:      u32 = MMIO_BASE + 0x00215060;
@@ -11,39 +11,16 @@ const AUX_MU_BAUD_REG:      u32 = MMIO_BASE + 0x00215068;
 const AUX_MU_LSR_REG:       u32 = MMIO_BASE + 0x00215054;
 const AUX_MU_IO_REG:        u32 = MMIO_BASE + 0x00215040;
 
+const TXD_GPIO_PIN:         u32 = 14;
+const RXD_GPIO_PIN:         u32 = 15;
+const ALT_FUC_UART:         u32 = 5;
+
+
 pub fn uart_init() {
-    // for more information: see chapter 6 in https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf
-
-    // Set GPIO function to UART
-    let mut selector = unsafe {
-        read_volatile(GPFSEL1 as *const u32)
-    };
-
-    selector &= !(0b111 << 12); // clear bits 12-14 for gpio 14
-    selector |= 0b010 << 12; // select alt5 for gpio 14
-    selector &= !(0b111 << 15); // clear bits 15-17 for gpio 15
-    selector |= 0b010 << 15; // select alt5 for gpio 15
-
-    unsafe {
-        write_volatile(GPFSEL1 as *mut u32, selector);
-    }
-
-    // Disable GPIO pull down/ pull up
-    unsafe {
-        write_volatile(GPPUD as *mut u32, 0b00);
-    }
-    wait_for_n_cycles(150);
-
-    let selector = (1 << 14) | (1 << 15); // select pins 14 and 15
-
-    unsafe {
-        write_volatile(GPPUDCLK0 as *mut u32, selector);
-    }
-    wait_for_n_cycles(150);
-
-    unsafe {
-        write_volatile(GPPUDCLK0 as *mut u32, 0);
-    }
+    set_gpio_func(TXD_GPIO_PIN, ALT_FUC_UART);
+    set_gpio_func(RXD_GPIO_PIN, ALT_FUC_UART);
+    enable_gpio_pin(TXD_GPIO_PIN);
+    enable_gpio_pin(RXD_GPIO_PIN);
 
     // Initialize mini UART
     unsafe {
@@ -53,8 +30,10 @@ pub fn uart_init() {
         write_volatile(AUX_MU_LCR_REG as *mut u32, 0b11); // 8 bit mode
         write_volatile(AUX_MU_MCR_REG as *mut u32, 0); // RTS to allways high
         write_volatile(AUX_MU_BAUD_REG as *mut u32, 270); // rate dependent on system clock frequency
-        write_volatile(AUX_MU_CNTL_REG as *mut u32, 0b11); // enable read and transmut
+        write_volatile(AUX_MU_CNTL_REG as *mut u32, 0b11); // enable read and transmit
     }
+
+    uart_send("\r\n\n");
 }
 
 pub fn uart_send(message: &str) {

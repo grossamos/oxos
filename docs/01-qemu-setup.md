@@ -130,6 +130,14 @@ aarch64-elf-gcc -T src/linker.ld -o target/oxos.elf -ffreestanding -O2 -nostdlib
 - qemu command used: `qemu-system-aarch64 -M raspi3b -kernel target/oxos.elf -nographic -serial null -chardev stdio,id=uart1 -serial chardev:uart1 -monitor none`
 - and tada it actually worked! (see screenshot)
 
+- Step 1: change function of GPIO pins (14 and 15 ~ RX and TX)
+    - change GPIO function select (GPIOFUNCSEL 1 because that register covers pins 10 - 19)
+    - select function alt5 according to spec sheet (s. section 6.2 in p. 102)
+- Step 2: enable the GPIO pins
+    - disable pull up pull down 
+    - enable clock
+    - the enabling has multiple steps and the whole gppud and the write at the end is a nessicary step specified in the data sheet
+
 ## Current Status
 
 - Attepting to run iso in qemu results in black screen:
