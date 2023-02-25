@@ -1,6 +1,6 @@
 use core::ptr::{write_volatile, read_volatile};
 
-use crate::gpio::{MMIO_BASE, set_gpio_func, enable_gpio_pin};
+use crate::gpio::{set_gpio_func, enable_gpio_pin, addresses::MMIO_BASE};
 
 const AUX_ENABLES:          u32 = MMIO_BASE + 0x00215004;
 const AUX_MU_CNTL_REG:      u32 = MMIO_BASE + 0x00215060;

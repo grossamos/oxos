@@ -6,7 +6,10 @@ edition = "2021"
 [profile.release]
 lto = true
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["board_rpi4"]
+board_rpi3 = []
+board_rpi4 = []
 
 [[bin]]
 name = "kernel"

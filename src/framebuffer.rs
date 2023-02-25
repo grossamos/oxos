@@ -1,6 +1,6 @@
 use core::ptr::{read_volatile, write_volatile};
 
-use crate::{gpio::MMIO_BASE, utils::wait_for_n_cycles};
+use crate::{gpio::addresses::MMIO_BASE, utils::wait_for_n_cycles};
 
 const VIDEOCORE_MBOX: u32 = MMIO_BASE + 0x0000B880;
 const MBOX_READ: u32 = VIDEOCORE_MBOX + 0x0;
@@ -19,7 +19,6 @@ impl Mbox {
     fn new() -> Mbox {
         return Mbox { 
             buffer: [0; 36],
-            //buffer: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
         }
     }
 

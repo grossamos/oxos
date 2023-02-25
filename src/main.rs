@@ -5,7 +5,6 @@
 #![no_main]
 #![no_std]
 
-use core::panic::PanicInfo;
 use core::arch::global_asm;
 use framebuffer::Framebuffer;
 use uart::{uart_init, uart_send};
@@ -14,9 +13,12 @@ mod uart;
 mod utils;
 mod framebuffer;
 mod gpio;
+mod panic;
+
+global_asm!(include_str!("boot.s"));
 
 #[no_mangle]
-pub extern fn kernel_main() {
+pub extern "C" fn kernel_main() -> ! {
     let message = "Hello World! It'sa me Amosio!\n";
 
     uart_init();
@@ -30,15 +32,3 @@ pub extern fn kernel_main() {
     }
 }
 
-
-global_asm!(include_str!("boot.s"));
-  
-#[panic_handler]
-#[no_mangle]
-fn panic(_panic: &PanicInfo<'_>) -> ! {
-    uart_send("KERNEL PANIC!");
-    loop {}
-} 
-
-#[lang = "eh_personality"]
-extern "C" fn eh_personality() {}

@@ -21,3 +21,14 @@ Planned tic tac toe:
 - indicate row: `21 20 16` == `1 2 3`
 - indicate col: `13 6 5` == `1 2 3`
 - indicate play: toggle in gpio `25`
+
+## Pi Blink
+- Following: <https://www.youtube.com/watch?v=jZT8APrzvc4>
+- added config in `.cargo`
+- added rust target: `rustup target add armv7a-none-eabi`
+- got the dump via: `cargo objdump -- -D target/armv7a-none-eabi/debug/pi_blink`
+- doesn't work -> not our uart or framebuffer code is fucked, we still have tooling issues
+
+## OS tutorials
+- though: might be an issue with the 3b+
+- tried the make files from the tutorials and it worked on both

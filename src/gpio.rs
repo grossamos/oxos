@@ -2,11 +2,23 @@ use core::ptr::{read_volatile, write_volatile};
 
 use crate::utils::wait_for_n_cycles;
 
-// would be 0xFE000000 for raspberry pi 4
-pub const MMIO_BASE:            u32 = 0x3F000000;
-pub const GPFSEL:               u32 = MMIO_BASE + 0x00200004;
-pub const GPPUD_ENABLE:         u32 = MMIO_BASE + 0x00200094;
-pub const GPPUDCLK_ENABLE:      u32 = MMIO_BASE + 0x00200098;
+use self::addresses::{GPFSEL, GPPUD_ENABLE, GPPUDCLK_ENABLE};
+
+#[cfg(feature = "board_rpi3")]
+pub mod addresses {
+    pub const MMIO_BASE:            u32 = 0x3F000000;
+    pub const GPFSEL:               u32 = MMIO_BASE + 0x00200004;
+    pub const GPPUD_ENABLE:         u32 = MMIO_BASE + 0x00200094;
+    pub const GPPUDCLK_ENABLE:      u32 = MMIO_BASE + 0x00200098;
+}
+
+#[cfg(feature = "board_rpi4")]
+pub mod addresses {
+    pub const MMIO_BASE:            u32 = 0xFE000000;
+    pub const GPFSEL:               u32 = MMIO_BASE + 0x00200004;
+    pub const GPPUD_ENABLE:         u32 = MMIO_BASE + 0x00200094;
+    pub const GPPUDCLK_ENABLE:      u32 = MMIO_BASE + 0x00200098;
+}
 
 pub fn set_gpio_func(pin_number: u32, gpio_func: u32) {
     // each GPIO function select is for 10 pins and is 4 bytes long
