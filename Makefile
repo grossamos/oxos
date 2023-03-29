@@ -59,3 +59,7 @@ clear-gpio:
 clean:
 	rm -f ./kernel8.img 
 	rm -rf ./target
+
+flash:
+	cp ./kernel8.img /run/media/$(USER)/bootfs
+	umount /run/media/$(USER)/bootfs
