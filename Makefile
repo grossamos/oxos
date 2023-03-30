@@ -1,10 +1,9 @@
 BOARD ?= rpi3
 RC := cargo
 RUST_SOURCES := $(shell find src -type f -iname '*.rs' && find src -type f -iname '*.ld' && find src -type f -iname '*.s' && echo 'Makefile')
-RUSTFLAGS := -C target-cpu=cortex-a53 -C link-arg=--script=src/linker.ld -C link-arg=--library-path=$(pwd)/src
-CARGO_OPTIONS := --target=aarch64-unknown-none-softfloat
-KERNEL_DEBUG := target/aarch64-unknown-none-softfloat/debug/kernel
-KERNEL_RELEASE := target/aarch64-unknown-none-softfloat/release/kernel
+CARGO_OPTIONS := --target=aarch64-unknown-none
+KERNEL_DEBUG := target/aarch64-unknown-none/debug/kernel
+KERNEL_RELEASE := target/aarch64-unknown-none/release/kernel
 KERNEL_BIN := kernel8.img
 QEMU_ARGS := -M raspi3b -serial null -chardev stdio,id=uart1 -serial chardev:uart1 -monitor none -qtest unix:/tmp/qtest-gpio.sock
 
@@ -17,7 +16,6 @@ else
 	exit 1
 endif
 
-
 .PHONY: all default release
 
 default: release
@@ -25,16 +23,16 @@ all: release
 release: $(KERNEL_BIN)
 
 ${KERNEL_BIN}: $(KERNEL_RELEASE)
-	@RUSTFLAGS="${RUSTFLAGS}" cargo objcopy ${CARGO_OPTIONS} --release -- -O binary kernel8.img --strip-all 
+	cargo objcopy --release -- -O binary kernel8.img
 
 ${KERNEL_RELEASE}: $(RUST_SOURCES)
-	@RUSTFLAGS="$(RUSTFLAGS)" cargo rustc ${CARGO_OPTIONS} --release
+	cargo build --release
 
 ${KERNEL_DEBUG}: $(RUST_SOURCES)
-	@RUSTFLAGS="$(RUSTFLAGS)" cargo rustc ${CARGO_OPTIONS}
+	cargo build
 
 objdump: ${KERNEL_RELEASE}
-	@RUSTFLAGS="$(RUSTFLAGS)" cargo objdump ${CARGO_OPTIONS} --release -- -D /home/amos/code/rust/oxos/target/aarch64-unknown-none-softfloat/release/kernel
+	cargo objdump --release -- --disassemble --no-show-raw-insn | less
 
 gpio-sock:
 	rm /tmp/qtest-gpio.fifo -f
@@ -61,5 +59,5 @@ clean:
 	rm -rf ./target
 
 flash:
-	cp ./kernel8.img /run/media/$(USER)/bootfs
+	cp ./kernel8.img /run/media/$(USER)/bootfs/
 	umount /run/media/$(USER)/bootfs
