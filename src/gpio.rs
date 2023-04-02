@@ -15,6 +15,7 @@ pub mod addresses {
 
 pub use self::addresses::MMIO_BASE;
 
+pub const GPFSEL0:              u32 = MMIO_BASE + 0x00200000;
 pub const GPFSEL1:              u32 = MMIO_BASE + 0x00200004;
 pub const GPFSEL2:              u32 = MMIO_BASE + 0x00200008;
 pub const GPSET0:               u32 = MMIO_BASE + 0x0020001C;
@@ -25,7 +26,7 @@ pub const _GPIO_MAX_PIN:         u32 = 53;
 
 pub fn set_gpio_func(pin_number: u32, gpio_func: u32) {
     // each GPIO function select is for 10 pins and is 4 bytes long
-    let function_select_reg = GPFSEL1 + (pin_number / 10) * 4;
+    let function_select_reg = GPFSEL0 + (pin_number / 10) * 4;
 
     let mut selector = unsafe {
         read_volatile(function_select_reg as *const u32)
@@ -66,9 +67,9 @@ fn disable_gpio_pupd() {
 }
 
 fn change_gpio_clock_pupd_register(pin_number: u32, value: u32) {
-    //let gpio_clock_pupd_enable_register = GPPUDCLK_ENABLE + (pin_number * 4) / 32;
+    let gpio_clock_pupd_enable_register = GPPUDCLK_ENABLE + (pin_number / 32) * 4;
     unsafe {
-        write_volatile(GPPUDCLK_ENABLE as *mut u32, value);
+        write_volatile(gpio_clock_pupd_enable_register as *mut u32, value);
     }
     blink_on();
     for _ in 0..150 {

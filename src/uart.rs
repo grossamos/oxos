@@ -2,19 +2,31 @@ use core::ptr::{write_volatile, read_volatile};
 
 use crate::gpio::{addresses::MMIO_BASE, set_gpio_func, enable_gpio_pin, blink_on};
 
+use self::baud::BAUD_RATE;
+
 const UART_BASE:            u32 = MMIO_BASE + 0x00215000;
 const AUX_ENABLES:          u32 = UART_BASE + 0x04;
-const AUX_MU_CNTL_REG:      u32 = UART_BASE + 0x60;
+const AUX_MU_IO_REG:        u32 = UART_BASE + 0x40;
 const AUX_MU_IER_REG:       u32 = UART_BASE + 0x44;
 const AUX_MU_LCR_REG:       u32 = UART_BASE + 0x4C;
 const AUX_MU_MCR_REG:       u32 = UART_BASE + 0x50;
-const AUX_MU_BAUD_REG:      u32 = UART_BASE + 0x68;
 const AUX_MU_LSR_REG:       u32 = UART_BASE + 0x54;
-const AUX_MU_IO_REG:        u32 = UART_BASE + 0x40;
+const AUX_MU_CNTL_REG:      u32 = UART_BASE + 0x60;
+const AUX_MU_BAUD_REG:      u32 = UART_BASE + 0x68;
 
 const TXD_GPIO_PIN:         u32 = 14;
 const RXD_GPIO_PIN:         u32 = 15;
-const ALT_FUC_UART:         u32 = 5;
+const ALT_FUC_UART:         u32 = 0x10; // confusingly the code for alt5
+                                        
+#[cfg(feature = "board_rpi3")]
+pub mod baud {
+    pub const BAUD_RATE:            u32 = 270;
+}
+
+#[cfg(feature = "board_rpi4")]
+pub mod baud {
+    pub const BAUD_RATE:            u32 = 541;
+}
 
 
 pub fn uart_init() {
@@ -32,7 +44,7 @@ pub fn uart_init() {
         write_volatile(AUX_MU_IER_REG as *mut u32, 0); // disable interrupts for uart
         write_volatile(AUX_MU_LCR_REG as *mut u32, 0b11); // 8 bit mode
         write_volatile(AUX_MU_MCR_REG as *mut u32, 0); // RTS to allways high
-        write_volatile(AUX_MU_BAUD_REG as *mut u32, 270); // rate dependent on system clock frequency
+        write_volatile(AUX_MU_BAUD_REG as *mut u32, BAUD_RATE); // rate dependent on system clock frequency
         write_volatile(AUX_MU_CNTL_REG as *mut u32, 0b11); // enable read and transmit
     }
 
