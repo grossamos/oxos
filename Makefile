@@ -23,13 +23,13 @@ all: release
 release: $(KERNEL_BIN)
 
 ${KERNEL_BIN}: $(KERNEL_RELEASE)
-	cargo objcopy --release -- -O binary kernel8.img
+	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary kernel8.img
 
 ${KERNEL_RELEASE}: $(RUST_SOURCES)
-	cargo build --release
+	cargo build --release $(CARGO_OPTIONS)
 
 ${KERNEL_DEBUG}: $(RUST_SOURCES)
-	cargo build
+	cargo build $(CARGO_OPTIONS)
 
 objdump: ${KERNEL_RELEASE}
 	cargo objdump --release -- --disassemble --no-show-raw-insn | less

@@ -1,6 +1,6 @@
-use core::ptr::{read_volatile, write_volatile};
+use core::{ptr::{read_volatile, write_volatile}, arch::asm};
 
-use crate::{gpio::addresses::MMIO_BASE, utils::wait_for_n_cycles};
+use crate::gpio::MMIO_BASE;
 
 const VIDEOCORE_MBOX: u32 = MMIO_BASE + 0x0000B880;
 const MBOX_READ: u32 = VIDEOCORE_MBOX + 0x0;
@@ -26,14 +26,20 @@ impl Mbox {
         let mbox_channel_addr = ((self.buffer.as_ptr() as u32) & !0xF) | (channel as u32 & 0xF);
         unsafe {
             while read_volatile(MBOX_STATUS as *const u32) & MBOX_FULL_FLAG != 0 {
-                wait_for_n_cycles(1);
+                //wait_for_n_cycles(1);
+                unsafe {
+                    asm!("nop");
+                }
             }
 
             write_volatile(MBOX_WRITE as *mut u32, mbox_channel_addr);
 
             loop {
                 while read_volatile(MBOX_STATUS as *const u32) & MBOX_EMPTY_FLAG != 0 {
-                    wait_for_n_cycles(1);
+                    //wait_for_n_cycles(1);
+                    unsafe {
+                        asm!("nop");
+                    }
                 }
                 if read_volatile(MBOX_READ as *const u32) == mbox_channel_addr {
                     return;

@@ -5,10 +5,11 @@
 #![no_main]
 #![no_std]
 
-use core::{arch::global_asm, ptr::write_volatile};
+use core::{arch::{global_asm, asm}, ptr::write_volatile};
 use framebuffer::Framebuffer;
-use gpio::{blink_on, enable_gpio_pin, enable_blink};
+use gpio::{blink_on, enable_blink, blink_off};
 use uart::{uart_init, uart_send};
+use utils::wait_for_n_cycles;
 
 mod framebuffer;
 mod gpio;
@@ -20,16 +21,36 @@ global_asm!(include_str!("boot.s"));
 
 #[no_mangle]
 pub extern "C" fn kernel_main() -> ! {
-    enable_blink();
-    blink_on();
+
     let message = "Hello World! It'sa me Amosio!\n";
 
     uart_init();
     uart_send(message);
 
-    //let fb = Framebuffer::new();
-    //fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
-    //uart_send("More text, did it work?");
+    let fb = Framebuffer::new();
+    fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
+    uart_send("More text, did it work?");
 
-    loop {}
+    enable_blink();
+    for _ in 0..20 {
+        // on 
+        blink_on();
+        for _ in 0..500000 {
+            unsafe {
+                asm!("nop");
+            }
+        }
+
+        // off
+        blink_off();
+        for _ in 0..500000 {
+            unsafe {
+                asm!("nop");
+            }
+        }
+    }
+
+
+    loop {
+    }
 }
