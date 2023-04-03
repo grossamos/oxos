@@ -124,12 +124,8 @@ impl Framebuffer {
             _height: mbox.buffer[6],
             pitch: mbox.buffer[33],
             _is_rgb: mbox.buffer[19] == 1,
-            // TOD change this to fEfffff.. for RPI 4
-            address: mbox.buffer[28] & 0x3FFFFFFF,
+            address: mbox.buffer[28] & (MMIO_BASE | 0x00FFFFFF),
         };
-
-        // important: length cannot be changed
-        //uart_send("Got Framebuffer\n");
 
         fb
     }
