@@ -5,13 +5,13 @@
 #![no_main]
 #![no_std]
 
-use core::{arch::{global_asm, asm}, ptr::write_volatile};
+use core::arch::{global_asm, asm};
 use framebuffer::Framebuffer;
 use gpio::{blink_on, enable_blink, blink_off};
 use uart::{uart_init, uart_send};
-use utils::wait_for_n_cycles;
 
 mod framebuffer;
+mod program_loader;
 mod gpio;
 mod panic;
 mod uart;

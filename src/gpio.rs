@@ -1,8 +1,5 @@
 use core::{ptr::{read_volatile, write_volatile}, arch::asm};
 
-use crate::utils::wait_for_n_cycles;
-
-
 #[cfg(feature = "board_rpi3")]
 pub mod addresses {
     pub const MMIO_BASE:            u32 = 0x3F000000;
