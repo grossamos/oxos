@@ -17,6 +17,8 @@ etc/init_pi3/boot.o
 **/*.img
 **/*.elf
 a.out
+ext/*/target
+kernel8.debug
 
 
 

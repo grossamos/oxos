@@ -6,12 +6,13 @@
 #![no_std]
 
 use core::arch::{global_asm, asm};
+use batch_loader::jump_to_program;
 use framebuffer::Framebuffer;
 use gpio::{blink_on, enable_blink, blink_off};
 use uart::{uart_init, uart_send};
 
 mod framebuffer;
-mod program_loader;
+mod batch_loader;
 mod gpio;
 mod panic;
 mod uart;
@@ -26,30 +27,12 @@ pub extern "C" fn kernel_main() -> ! {
 
     uart_init();
     uart_send(message);
+    
+    jump_to_program(0);
 
-    let fb = Framebuffer::new();
-    fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
-    uart_send("More text, did it work?");
-
-    enable_blink();
-    for _ in 0..20 {
-        // on 
-        blink_on();
-        for _ in 0..500000 {
-            unsafe {
-                asm!("nop");
-            }
-        }
-
-        // off
-        blink_off();
-        for _ in 0..500000 {
-            unsafe {
-                asm!("nop");
-            }
-        }
-    }
-
+    //let fb = Framebuffer::new();
+    //fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
+    //uart_send("More text, did it work?");
 
     loop {
     }

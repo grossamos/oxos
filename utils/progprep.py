@@ -11,22 +11,22 @@ parser.add_argument('output')
 args = parser.parse_args()
 
 # init output file
-output_file = open(args.output, 'wb')
-
 base_filename = args.base
 base = open(base_filename, 'rb').read()
-output_file.write(base)
-unaligned_len = len(base)
 
+output_file = open(args.output, 'wb')
+output_file.write(base)
+
+unaligned_len = len(base)
+align_byte_count = 32
 binary_filenames = args.binaries
 
-align_byte_count = 32
-
 for filename in binary_filenames:
+    print(unaligned_len)
+
     # 32 bit align previous file
     missing_bytes = (32 - unaligned_len % 32) % 32
     filler = 0x0
-    print(missing_bytes)
     output_file.write(filler.to_bytes(missing_bytes))
 
     # add tlv to file

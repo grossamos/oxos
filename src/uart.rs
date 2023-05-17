@@ -53,11 +53,18 @@ pub fn uart_init() {
 
 pub fn uart_send(message: &str) {
     for letter in message.chars() {
-        uart_send_letter(letter);
+        uart_send_letter(letter as u32);
     }
 }
 
-fn uart_send_letter(letter: char) {
+pub fn uart_send_number(number: u32) {
+    for i in (0..9).rev() {
+        let transmuted = (number / 10_u32.pow(i)) % 10;
+        uart_send_letter(transmuted + 48);
+    }
+}
+
+fn uart_send_letter(letter: u32) {
     unsafe {
         // wait while FIFO is full
         while read_volatile(AUX_MU_LSR_REG as *const u32) & 0x20 != 0x20 {}
