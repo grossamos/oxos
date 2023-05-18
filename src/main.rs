@@ -23,10 +23,10 @@ global_asm!(include_str!("boot.s"));
 #[no_mangle]
 pub extern "C" fn kernel_main() -> ! {
 
-    let message = "Hello World! It'sa me Amosio!\n";
+    //let message = "Hello World! It'sa me Amosio!\n";
 
-    uart_init();
-    uart_send(message);
+    //uart_init();
+    //uart_send(message);
     
     jump_to_program(0);
 

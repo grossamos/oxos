@@ -6,7 +6,6 @@ SECTIONS
     __start = .;
     .text :
     {
-        *(.text._start)
         *(.text.kernel_main)
         *(.text*)
         *(.text)
