@@ -7,7 +7,7 @@ edition = "2021"
 lto = true
 
 [features]
-default = []
+default = ["board_rpi3"]
 board_rpi3 = []
 board_rpi4 = []
 

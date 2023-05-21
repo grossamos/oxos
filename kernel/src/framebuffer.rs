@@ -27,9 +27,7 @@ impl Mbox {
         unsafe {
             while read_volatile(MBOX_STATUS as *const u32) & MBOX_FULL_FLAG != 0 {
                 //wait_for_n_cycles(1);
-                unsafe {
-                    asm!("nop");
-                }
+                asm!("nop");
             }
 
             write_volatile(MBOX_WRITE as *mut u32, mbox_channel_addr);
@@ -37,9 +35,7 @@ impl Mbox {
             loop {
                 while read_volatile(MBOX_STATUS as *const u32) & MBOX_EMPTY_FLAG != 0 {
                     //wait_for_n_cycles(1);
-                    unsafe {
-                        asm!("nop");
-                    }
+                    asm!("nop");
                 }
                 if read_volatile(MBOX_READ as *const u32) == mbox_channel_addr {
                     return;

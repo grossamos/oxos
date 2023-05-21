@@ -2,6 +2,11 @@
 import argparse
 import os
 
+def add_32_padding(output_file, unaligned_len):
+    missing_bytes = (32 - unaligned_len % 32) % 32
+    filler = 0x0
+    output_file.write(filler.to_bytes(missing_bytes))
+
 # set input arguments
 parser = argparse.ArgumentParser(description='A quick shell script to create an executable bin for oxos')
 parser.add_argument('base')
@@ -21,14 +26,13 @@ unaligned_len = len(base)
 align_byte_count = 32
 binary_filenames = args.binaries
 
+# add padding till 0x83000
+add_32_padding(output_file, unaligned_len)
+# print(unaligned_len)
+if unaligned_len < 0x3000:
+    output_file.write(b'\0' * ((0x3000 - 32 * 2) - unaligned_len - 1))
+
 for filename in binary_filenames:
-    print(unaligned_len)
-
-    # 32 bit align previous file
-    missing_bytes = (32 - unaligned_len % 32) % 32
-    filler = 0x0
-    output_file.write(filler.to_bytes(missing_bytes))
-
     # add tlv to file
     input_content = open(filename, 'rb').read()
     length = len(input_content)
@@ -40,4 +44,6 @@ for filename in binary_filenames:
     output_file.write(input_content)
     unaligned_len = length
 
+    # 32 bit align previous file
+    add_32_padding(output_file, unaligned_len)
 

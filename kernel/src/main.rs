@@ -5,11 +5,10 @@
 #![no_main]
 #![no_std]
 
-use core::arch::{global_asm, asm};
+use core::arch::global_asm;
 use batch_loader::jump_to_program;
 use framebuffer::Framebuffer;
-use gpio::{blink_on, enable_blink, blink_off};
-use uart::{uart_init, uart_send};
+use uart::{uart_init, uart_send, uart_send_number};
 
 mod framebuffer;
 mod batch_loader;
@@ -22,17 +21,17 @@ global_asm!(include_str!("boot.s"));
 
 #[no_mangle]
 pub extern "C" fn kernel_main() -> ! {
+    let message = "I'm a kernel!\n";
+    uart_init();
+    uart_send(message);
 
-    //let message = "Hello World! It'sa me Amosio!\n";
-
-    //uart_init();
-    //uart_send(message);
-    
     jump_to_program(0);
 
-    //let fb = Framebuffer::new();
-    //fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
-    //uart_send("More text, did it work?");
+    let fb = Framebuffer::new();
+    fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
+
+    uart_send("More text, did it work?");
+    uart_send_number(42);
 
     loop {
     }

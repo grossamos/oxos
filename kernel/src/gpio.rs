@@ -13,10 +13,10 @@ pub mod addresses {
 pub use self::addresses::MMIO_BASE;
 
 pub const GPFSEL0:              u32 = MMIO_BASE + 0x00200000;
-pub const GPFSEL1:              u32 = MMIO_BASE + 0x00200004;
-pub const GPFSEL2:              u32 = MMIO_BASE + 0x00200008;
+pub const _GPFSEL1:              u32 = MMIO_BASE + 0x00200004;
+pub const _GPFSEL2:              u32 = MMIO_BASE + 0x00200008;
 pub const GPSET0:               u32 = MMIO_BASE + 0x0020001C;
-pub const GPCLR0:               u32 = MMIO_BASE + 0x00200028;
+pub const _GPCLR0:               u32 = MMIO_BASE + 0x00200028;
 pub const GPPUD_ENABLE:         u32 = MMIO_BASE + 0x00200094;
 pub const GPPUDCLK_ENABLE:      u32 = MMIO_BASE + 0x00200098;
 pub const _GPIO_MAX_PIN:         u32 = 53;
@@ -77,9 +77,9 @@ fn change_gpio_clock_pupd_register(pin_number: u32, value: u32) {
     //wait_for_n_cycles(150);
 }
 
-pub fn enable_blink() {
+pub fn _enable_blink() {
     unsafe { 
-        write_volatile(GPFSEL2 as *mut u32, 1<<3);
+        write_volatile(_GPFSEL2 as *mut u32, 1<<3);
     }
 }
 
@@ -89,9 +89,9 @@ pub fn blink_on() {
     }
 }
 
-pub fn blink_off() {
+pub fn _blink_off() {
     unsafe {
-        write_volatile(GPCLR0 as *mut u32, 1<<21);
+        write_volatile(_GPCLR0 as *mut u32, 1<<21);
     }
 }
 

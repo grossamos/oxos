@@ -11,19 +11,16 @@ SECTIONS
         *(.text*)
         *(.text)
     }
-    /*. = ALIGN(4096);*/
     .rodata :
     {
         *(.rodata*)
         *(.rodata)
     }
-    /*. = ALIGN(4096);*/
     .data :
     {
         *(.data*)
         *(.data)
     }
-    /*. = ALIGN(4096);*/
     __bss_start = .;
     .bss :
     {
@@ -31,13 +28,12 @@ SECTIONS
         *(.bss*)
         *(.bss)
     }
-    /*. = ALIGN(4096); */
     .ARM.exidx :
     {
         *(.ARM.exidx*)
     }
-    /*. = ALIGN(4096);*/
     __bss_end = .;
+    . = 0x82fc0; /* Align first program with 0x83000 */
     __end = .;
 }
 

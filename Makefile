@@ -1,7 +1,8 @@
 BOARD ?= rpi3
 RC := cargo
-RUST_SOURCES := $(shell find src -type f -iname '*.rs' && find src -type f -iname '*.ld' && find src -type f -iname '*.s' && echo 'Makefile')
-CARGO_OPTIONS := --target=aarch64-unknown-none
+RUST_SOURCES := $(shell find kernel/src -type f -iname '*.rs' && find kernel/src -type f -iname '*.ld' && find kernel/src -type f -iname '*.s' && echo 'Makefile')
+CARGO_OPTIONS := --target=aarch64-unknown-none 
+CARGO_CONFIG := --config utils/kernel_config.toml
 KERNEL_DEBUG := target/aarch64-unknown-none/debug/kernel
 KERNEL_RELEASE := target/aarch64-unknown-none/release/kernel
 KERNEL_BIN := kernel8.img
@@ -22,24 +23,30 @@ endif
 default: release
 all: release
 release: $(KERNEL_BIN)
+hello: ext/hello/target/hello
 
-${KERNEL_BIN}: $(KERNEL_RELEASE) ext/hello_world/target/hello
-	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary $(KERNEL_BIN)
-	utils/progprep.py $(KERNEL_BIN) ext/hello_world/target/hello $(KERNEL_BIN)
+${KERNEL_BIN}: $(RUST_SOURCES) ext/hello/target/hello
+	cd kernel; \
+	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary ../$(KERNEL_BIN)
+	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello $(KERNEL_BIN)
 
 ${KERNEL_RELEASE}: $(RUST_SOURCES)
+	cd kernel; \
 	cargo build --release $(CARGO_OPTIONS)
 
 ${KERNEL_DEBUG_LINK}: $(RUST_SOURCES)
+	cd kernel; \
 	cargo objcopy $(CARGO_OPTIONS) --release -- --only-keep-debug $(KERNEL_DEBUG_LINK)
 
 objdump: ${KERNEL_RELEASE}
+	cd kernel; \
 	cargo objdump --release -- --disassemble #--no-show-raw-insn | less
 
 gpio-sock:
-	rm /tmp/qtest-gpio.fifo -f
-	mkfifo /tmp/qtest-gpio.fifo
-	cat /tmp/qtest-gpio.fifo | socat - UNIX-LISTEN:/tmp/qtest-gpio.sock &
+	cd kernel; \
+	rm /tmp/qtest-gpio.fifo -f; \
+	mkfifo /tmp/qtest-gpio.fifo; \
+	cat /tmp/qtest-gpio.fifo | socat - UNIX-LISTEN:/tmp/qtest-gpio.sock & \
 	alias set="echo hello world"
 
 qemu: ${KERNEL_BIN} gpio-sock
@@ -48,9 +55,8 @@ qemu: ${KERNEL_BIN} gpio-sock
 qemu-debug: ${KERNEL_DEBUG_LINK} $(KERNEL_BIN) gpio-sock
 	qemu-system-aarch64 $(QEMU_ARGS) -S -s -kernel ${KERNEL_BIN}
 
-ext/hello_world/target/hello: ext/hello_world/src/main.rs
-	#cargo build --release --target=aarch64-unknown-none; 
-	cd ext/hello_world; \
+ext/hello/target/hello: ext/hello/src/main.rs
+	cd ext/hello; \
 	cargo objcopy --release --target=aarch64-unknown-none -- -O binary target/hello
 
 # set default pin (usually indicated in cmdline)
@@ -63,9 +69,9 @@ clear-gpio:
 
 clean:
 	rm -f ./kernel8.img 
-	rm -rf ./target
+	rm -rf ./kernel/target
 	rm -f ./kernel8.debug
-	rm -rf ./ext/hello_world/target/
+	rm -rf ./ext/hello/target/
 
 flash:
 	cp ./kernel8.img /run/media/$(USER)/bootfs/
