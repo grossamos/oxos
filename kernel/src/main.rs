@@ -28,7 +28,7 @@ pub extern "C" fn kernel_main() -> ! {
     jump_to_program(0);
 
     let fb = Framebuffer::new();
-    fb.draw_str("HELLO WORLD! IT IS I, AMOS...");
+    fb.draw_str("HELLO WORLD! IT IS I, AMOS...BLA BLA BLA");
 
     uart_send("More text, did it work?");
     uart_send_number(42);

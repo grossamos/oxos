@@ -27,10 +27,11 @@ align_byte_count = 32
 binary_filenames = args.binaries
 
 # add padding till 0x83000
-add_32_padding(output_file, unaligned_len)
-# print(unaligned_len)
+print(unaligned_len)
 if unaligned_len < 0x3000:
-    output_file.write(b'\0' * ((0x3000 - 32 * 2) - unaligned_len - 1))
+    buffer_len = ((0x3000 - 32 * 2) - unaligned_len)
+    print(len(b'\x00' * buffer_len))
+    output_file.write(b'\x00' * buffer_len)
 
 for filename in binary_filenames:
     # add tlv to file

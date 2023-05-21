@@ -25,7 +25,7 @@ all: release
 release: $(KERNEL_BIN)
 hello: ext/hello/target/hello
 
-${KERNEL_BIN}: $(RUST_SOURCES) ext/hello/target/hello
+${KERNEL_BIN}: $(RUST_SOURCES) ext/hello/target/hello utils/progprep.py
 	cd kernel; \
 	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary ../$(KERNEL_BIN)
 	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello $(KERNEL_BIN)
