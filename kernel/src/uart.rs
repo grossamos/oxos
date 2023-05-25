@@ -57,11 +57,15 @@ pub fn uart_send(message: &str) {
     }
 }
 
-pub fn uart_send_number(number: u32) {
-    for i in (0..9).rev() {
-        let transmuted = (number / 10_u32.pow(i)) % 10;
-        uart_send_letter(transmuted + 48);
+pub fn uart_send_number(number: u64) {
+    for i in (0..20).rev() {
+        let transmuted = (number / 10_u64.pow(i)) % 10;
+        //for _ in 0..transmuted {
+            //uart_send_letter('.' as u32);
+        //}
+        uart_send_letter((transmuted + 48) as u32);
     }
+    uart_send_letter('\n' as u32);
 }
 
 fn uart_send_letter(letter: u32) {

@@ -27,6 +27,7 @@ hello: ext/hello/target/hello
 
 ${KERNEL_BIN}: $(RUST_SOURCES) ext/hello/target/hello utils/progprep.py
 	cd kernel; \
+	cargo build --release $(CARGO_OPTIONS); \
 	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary ../$(KERNEL_BIN)
 	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello $(KERNEL_BIN)
 
@@ -36,7 +37,7 @@ ${KERNEL_RELEASE}: $(RUST_SOURCES)
 
 ${KERNEL_DEBUG_LINK}: $(RUST_SOURCES)
 	cd kernel; \
-	cargo objcopy $(CARGO_OPTIONS) --release -- --only-keep-debug $(KERNEL_DEBUG_LINK)
+	cargo objcopy $(CARGO_OPTIONS) --release -- --only-keep-debug ../$(KERNEL_DEBUG_LINK)
 
 objdump: ${KERNEL_RELEASE}
 	cd kernel; \
@@ -57,6 +58,7 @@ qemu-debug: ${KERNEL_DEBUG_LINK} $(KERNEL_BIN) gpio-sock
 
 ext/hello/target/hello: ext/hello/src/main.rs
 	cd ext/hello; \
+	cargo build --release --target=aarch64-unknown-none; \
 	cargo objcopy --release --target=aarch64-unknown-none -- -O binary target/hello
 
 # set default pin (usually indicated in cmdline)
