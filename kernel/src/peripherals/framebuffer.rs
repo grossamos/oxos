@@ -1,6 +1,6 @@
 use core::{ptr::{read_volatile, write_volatile}, arch::asm};
 
-use crate::gpio::MMIO_BASE;
+use super::gpio::MMIO_BASE;
 
 const VIDEOCORE_MBOX: u32 = MMIO_BASE + 0x0000B880;
 const MBOX_READ: u32 = VIDEOCORE_MBOX + 0x0;

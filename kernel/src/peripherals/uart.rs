@@ -1,6 +1,6 @@
 use core::ptr::{write_volatile, read_volatile};
 
-use crate::gpio::{addresses::MMIO_BASE, set_gpio_func, enable_gpio_pin};
+use super::gpio::{addresses::MMIO_BASE, set_gpio_func, enable_gpio_pin};
 
 use self::baud::BAUD_RATE;
 

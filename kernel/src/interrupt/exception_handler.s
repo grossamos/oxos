@@ -1,8 +1,14 @@
 // Macro to save registers (copied from rust embedded)
 .macro CALL_WITH_CONTEXT handler
 __vector_\handler:
-	// Make room on the stack for the exception context.
-	sub	sp,  sp,  #16 * 17
+    // registers x0-x18 are caller saved and x29/x30 are the lr and fr
+    mov x20, sp
+    ldr x19, =KERNEL_STACK_POINTER
+    ldr x21, [x19]
+    mov sp, x21
+
+    // Make room on the stack for the exception context.
+	sub	sp,  sp,  #16 * 18
 
 	// Store all general purpose registers on the stack.
 	stp	x0,  x1,  [sp, #16 * 0]
@@ -17,7 +23,7 @@ __vector_\handler:
 	stp	x18, x19, [sp, #16 * 9]
 	stp	x20, x21, [sp, #16 * 10]
 	stp	x22, x23, [sp, #16 * 11]
-	stp	x24, x25, [sp, #16 * 12]
+	stp	x24, x25, [sp, #16 * 12] 
 	stp	x26, x27, [sp, #16 * 13]
 	stp	x28, x29, [sp, #16 * 14]
 
@@ -29,6 +35,7 @@ __vector_\handler:
 
 	stp	lr,  x1,  [sp, #16 * 15]
 	stp	x2,  x3,  [sp, #16 * 16]
+    str x20,      [sp, #16 * 17]
 
 	// x0 is the first argument for the function called through `\handler`.
 	mov	x0,  sp
@@ -44,12 +51,6 @@ __vector_\handler:
 .type	__vector_\handler, function
 .endm
 
-.macro FIQ_SUSPEND
-1:	wfe
-	b	1b
-.endm
-
-
 .section .text
 
 // base vector has to be aligned to 0x800 (2^11) bits
@@ -57,43 +58,43 @@ __vector_\handler:
 
 __exception_vector:
 .org 0x000
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x080
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x100
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x180
-	FIQ_SUSPEND
+	b unknow_exception
 
 // Current exception level with SP_ELx, x > 0.
 .org 0x200
-	CALL_WITH_CONTEXT current_elx_synchronous
+	CALL_WITH_CONTEXT execute_syscall
 .org 0x280
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x300
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x380
-	FIQ_SUSPEND
+	b unknow_exception
 
 // Lower exception level, AArch64
 .org 0x400
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x480
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x500
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x580
-	FIQ_SUSPEND
+	b unknow_exception
 
 // Lower exception level, AArch32
 .org 0x600
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x680
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x700
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x780
-	FIQ_SUSPEND
+	b unknow_exception
 .org 0x800
 
 
@@ -120,7 +121,7 @@ __exception_restore_context:
 	ldp	x26, x27, [sp, #16 * 13]
 	ldp	x28, x29, [sp, #16 * 14]
 
-	add	sp,  sp,  #16 * 17
+    ldr w19, [sp, #16 * 17]
 
 	eret
 

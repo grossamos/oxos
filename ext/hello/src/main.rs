@@ -15,7 +15,10 @@ pub extern "C" fn main() -> ! {
     uart_send("I'm an instance!\n");
 
     unsafe {
-        asm!("svc 0x80");
+        asm!(
+            "mov x8, 0x80",
+            "svc 0x00"
+        );
     }
 
     uart_send("I'm back bitch");
