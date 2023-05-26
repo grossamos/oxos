@@ -1,5 +1,5 @@
 [package]
-name = "oxos-syscall"
+name = "oxos_syscall"
 version = "0.1.0"
 edition = "2021"
 

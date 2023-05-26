@@ -29,7 +29,7 @@ ${KERNEL_BIN}: $(RUST_SOURCES) ext/hello/target/hello utils/progprep.py
 	cd kernel; \
 	cargo build --release $(CARGO_OPTIONS); \
 	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary ../$(KERNEL_BIN)
-	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello ./ext/hello/target/hello $(KERNEL_BIN)
+	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello $(KERNEL_BIN)
 
 ${KERNEL_RELEASE}: $(RUST_SOURCES)
 	cd kernel; \
