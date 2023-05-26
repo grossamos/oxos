@@ -122,6 +122,7 @@ __exception_restore_context:
 	ldp	x28, x29, [sp, #16 * 14]
 
     ldr w19, [sp, #16 * 17]
+    mov sp, x19
 
 	eret
 
