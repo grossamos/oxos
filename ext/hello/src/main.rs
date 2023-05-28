@@ -4,7 +4,7 @@
 use core::{panic::PanicInfo, ptr::write_volatile};
 use core::arch::global_asm;
 
-use oxos_syscall::{uart_send, exit};
+use oxos_syscall::{uart_send, exit, DisplayBuffer};
 
 global_asm!(include_str!("init.s"));
 
@@ -12,6 +12,9 @@ global_asm!(include_str!("init.s"));
 pub extern "C" fn main() {
     let message = "Hello World!\n";
     uart_send(message);
+    let display = DisplayBuffer::new();
+    display.draw_pixel(0, 0, 0xFFFF00);
+    //display.draw_str("hello world");
 
     exit();
 }

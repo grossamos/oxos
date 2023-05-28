@@ -23,6 +23,8 @@ pub fn _get_execution_level() -> u64 {
 
 pub fn switch_to_el_1() {
     unsafe {
+        let old_stack_pointer: u64;
+
         let sctrl_el1_val = SCTLR_VALUE_MMU_DISABLED;
         asm!("msr sctlr_el1, {}", in(reg) sctrl_el1_val);
 
@@ -34,16 +36,21 @@ pub fn switch_to_el_1() {
         
         let mut adr_save: u64;
         asm!( 
+            "mov {}, sp",
             "mov {}, x0",
             "adr x0, 2f",
             "msr elr_el2, x0",
             "eret",
             "2: nop",
+            out(reg) old_stack_pointer,
             out(reg) adr_save,
         );
 
         asm!(
-            "mov x0, {}", in(reg) adr_save
+            "mov x0, {}", 
+            "mov sp, {}", 
+            in(reg) adr_save,
+            in(reg) old_stack_pointer,
         );
 
     }

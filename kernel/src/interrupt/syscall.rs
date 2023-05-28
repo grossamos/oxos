@@ -1,32 +1,35 @@
-use core::{arch::asm, ptr::{write_volatile}, slice::from_raw_parts, str::from_utf8};
+use core::{arch::asm, ptr::write_volatile, slice::from_raw_parts, str::from_utf8};
 
-use crate::{process::{jump_to_next_program, INSTANCE_STACK_BASE, switch_to_instance_stack}, peripherals::uart_send};
+use crate::{process::{jump_to_next_program, INSTANCE_STACK_BASE, switch_to_instance_stack}, peripherals::{uart_send, Framebuffer, uart_send_number}};
 
 use super::exception_handler::ExceptionContext;
 
 // same number used in linux
 const SYSCALL_EXIT: u64         = 0x80;
 const SYSCALL_UART: u64         = 0x81;
+const SYSCALL_DRAW_PIXEL: u64   = 0x82;
 
 // The exception context as it is stored on the stack on exception entry.
 #[no_mangle]
 extern "C" fn execute_syscall(e: &mut ExceptionContext) {
+    uart_send_number(e.gpr[8]);
     match e.gpr[8] {
         SYSCALL_EXIT => syscall_exit(e),
         SYSCALL_UART => syscall_uart_send(e),
+        SYSCALL_DRAW_PIXEL => syscall_draw_pixel(e),
         _ => panic!("Unknown kernel function"),
     }
 }
 
 fn syscall_exit(e: &mut ExceptionContext) {
-    switch_to_instance_stack();
-
     // Clean stack of process
     for i in e.sp..INSTANCE_STACK_BASE {
         unsafe {
             write_volatile(i as *mut u32, 0);
         }
     }
+
+    switch_to_instance_stack();
     
     // Return from exception
     unsafe {
@@ -54,4 +57,27 @@ fn syscall_uart_send(e: &mut ExceptionContext) {
         uart_send(message);
     }
     //uart_send("Sending...\n");
+}
+
+static mut FRAMEBUFFER: Option<Framebuffer> = None;
+
+fn syscall_draw_pixel(e: &mut ExceptionContext) {
+    // initialize fb 
+    uart_send("are we sending...\n");
+    unsafe {
+        match FRAMEBUFFER {
+            Some(_) => (),
+            None => {
+                FRAMEBUFFER = Some(Framebuffer::new());
+            }
+        }
+        uart_send("init done.. \n");
+
+        match &FRAMEBUFFER {
+            Some(fb) => {
+                fb.draw_pixel(e.gpr[1] as u32, e.gpr[2] as u32, e.gpr[3] as u32)
+            },
+            None => panic!("Failed to initialize Framebuffer"),
+        }
+    }
 }

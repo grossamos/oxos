@@ -73,7 +73,7 @@ clean:
 	rm -f ./kernel8.img 
 	rm -rf ./kernel/target
 	rm -f ./kernel8.debug
-	rm -rf ./ext/hello/target/
+	rm -rf ./ext/*/target/
 
 flash:
 	cp ./kernel8.img /run/media/$(USER)/bootfs/

@@ -1,7 +1,11 @@
 #![no_std]
 #![no_main]
 
+mod display;
+
 use core::arch::asm;
+
+pub use display::DisplayBuffer;
 
 pub fn uart_send(message: &str) {
     unsafe {

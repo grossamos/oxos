@@ -39,7 +39,6 @@ for filename in binary_filenames:
     output_file.write(length.to_bytes(align_byte_count))
 
     output_file.write(input_content)
-    print(length)
     bin_len += length + 32*2
 
     counter += 1
