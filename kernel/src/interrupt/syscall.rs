@@ -1,13 +1,17 @@
 use core::{arch::asm, ptr::write_volatile, slice::from_raw_parts, str::from_utf8};
 
-use crate::{process::{jump_to_next_program, INSTANCE_STACK_BASE, switch_to_instance_stack}, peripherals::{uart_send, Framebuffer, uart_send_number}};
+use crate::{process::{jump_to_next_program, INSTANCE_STACK_BASE, switch_to_instance_stack}, peripherals::{uart_send, Framebuffer, uart_send_number, activate_input_for_gpio, wait_for_gpio_flip, get_selected_gpio_regs}};
 
 use super::exception_handler::ExceptionContext;
 
 // same number used in linux
-const SYSCALL_EXIT: u64         = 0x80;
-const SYSCALL_UART: u64         = 0x81;
-const SYSCALL_DRAW_PIXEL: u64   = 0x82;
+const SYSCALL_EXIT: u64                     = 0x80;
+const SYSCALL_UART: u64                     = 0x81;
+const SYSCALL_DRAW_PIXEL: u64               = 0x82;
+
+const SYSCALL_ACTIVATE_INPUT_REGISTER: u64  = 0x83;
+const SYSCALL_WAIT_FOR_GPIO_FLIP: u64       = 0x84;
+const SYSCALL_GET_REG_VALUE: u64            = 0x85;
 
 // The exception context as it is stored on the stack on exception entry.
 #[no_mangle]
@@ -16,15 +20,24 @@ extern "C" fn execute_syscall(e: &mut ExceptionContext) {
         SYSCALL_EXIT => syscall_exit(e),
         SYSCALL_UART => syscall_uart_send(e),
         SYSCALL_DRAW_PIXEL => syscall_draw_pixel(e),
+        SYSCALL_ACTIVATE_INPUT_REGISTER => syscall_activate_input_register(e),
+        SYSCALL_WAIT_FOR_GPIO_FLIP => syscall_wait_for_gpio_flip(e),
+        SYSCALL_GET_REG_VALUE => syscall_get_reg_value(e),
         _ => {
+            for i in 0..30 {
+                uart_send_number(e.gpr[i]);
+            }
             uart_send("\nSyscall number:");
             uart_send_number(e.gpr[8]);
-            uart_send("ESR_EL2:");
+            uart_send("ESR_EL1:");
             uart_send_number(e.esr_el1);
+            uart_send("ELR_EL1:");
+            uart_send_number(e.elr_el1);
             panic!("Unknown kernel function");
         },
     }
 }
+
 
 fn syscall_exit(e: &mut ExceptionContext) {
     // Clean stack of process
@@ -82,5 +95,39 @@ fn syscall_draw_pixel(e: &mut ExceptionContext) {
             },
             None => panic!("Failed to initialize Framebuffer"),
         }
+    }
+}
+
+fn syscall_activate_input_register(e: &mut ExceptionContext) {
+    activate_input_for_gpio(e.gpr[1] as u32);
+}
+
+fn syscall_wait_for_gpio_flip(e: &mut ExceptionContext) {
+    wait_for_gpio_flip(e.gpr[1] as u32);
+}
+
+fn syscall_get_reg_value(e: &mut ExceptionContext) {
+    let mut regs = [false; 32];
+
+    uart_send_number(e.gpr[1]);
+    for i in 0..32 {
+        if e.gpr[1] & (1 << i) > 0 {
+            regs[i] = true;
+        }
+    }
+
+    let values = get_selected_gpio_regs(regs);
+
+    let mut result = 0;
+    
+    for i in 0..32 {
+        match values[i] {
+            Some(true) => result = result | (1 << i),
+            _ => {},
+        }
+    }
+
+    unsafe {
+        asm!("mov x0, {0:x}", in(reg) result)
     }
 }

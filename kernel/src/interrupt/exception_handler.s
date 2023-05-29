@@ -109,7 +109,7 @@ __exception_restore_context:
 	msr	SPSR_EL2, x19
 	msr	ELR_EL2,  x20
 
-	ldp	x0,  x1,  [sp, #16 * 0]
+	ldp	x2,  x1,  [sp, #16 * 0]
 	ldp	x2,  x3,  [sp, #16 * 1]
 	ldp	x4,  x5,  [sp, #16 * 2]
 	ldp	x6,  x7,  [sp, #16 * 3]

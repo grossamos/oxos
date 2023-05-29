@@ -10,6 +10,7 @@ impl DisplayBuffer {
         DisplayBuffer {  }
     }
     pub fn draw_pixel(&self, x: u32, y: u32, color: u32) { 
+        //uart_send("test");
         unsafe {
             asm!(
                 "sub sp, sp, 16 * 5",

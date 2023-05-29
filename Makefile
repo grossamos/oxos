@@ -6,7 +6,9 @@ CARGO_CONFIG := --config utils/kernel_config.toml
 KERNEL_DEBUG := target/aarch64-unknown-none/debug/kernel
 KERNEL_RELEASE := target/aarch64-unknown-none/release/kernel
 KERNEL_BIN := kernel8.img
-QEMU_ARGS := -M raspi3b -serial null -chardev stdio,id=uart1 -serial chardev:uart1 -monitor none -qtest unix:/tmp/qtest-gpio.sock
+QEMU_ARGS := -M raspi3b -serial null -chardev stdio,id=uart1 -serial chardev:uart1 -monitor none 
+QEMU_ARGS := $(QEMU_ARGS) -qtest unix:/tmp/qtest-gpio.sock
+
 KERNEL_DEBUG_LINK := kernel8.debug
 
 ifeq ($(BOARD),rpi3)
@@ -43,33 +45,19 @@ objdump: ${KERNEL_RELEASE}
 	cd kernel; \
 	cargo objdump --release -- --disassemble #--no-show-raw-insn | less
 
-gpio-sock:
-	cd kernel; \
-	rm /tmp/qtest-gpio.fifo -f; \
-	mkfifo /tmp/qtest-gpio.fifo; \
-	cat /tmp/qtest-gpio.fifo | socat - UNIX-LISTEN:/tmp/qtest-gpio.sock & \
-	alias set="echo hello world"
-
-qemu: ${KERNEL_BIN} gpio-sock
+qemu: ${KERNEL_BIN}
 	qemu-system-aarch64 $(QEMU_ARGS) -kernel ${KERNEL_BIN}
 
-qemu-debug: ${KERNEL_DEBUG_LINK} $(KERNEL_BIN) gpio-sock
+qemu-debug: ${KERNEL_DEBUG_LINK} $(KERNEL_BIN)
 	qemu-system-aarch64 $(QEMU_ARGS) -S -s -kernel ${KERNEL_BIN}
-
-ext/hello/target/hello: ext/hello/src/main.rs
 
 ext/hello/target/hello: ext/hello/src/main.rs
 	cd ext/hello; \
 	cargo build --release --target=aarch64-unknown-none; \
 	cargo objcopy --release --target=aarch64-unknown-none -- -O binary target/hello
 
-# set default pin (usually indicated in cmdline)
-PIN=25
-set-gpio: 
-	printf 'writel 0x%x 0x%x \n' 0x3f200034 $$((1 << ($(PIN) % 32))) > /tmp/qtest-gpio.fifo
-
-clear-gpio:
-	printf 'writel 0x%x 0x%x \n' 0x3f200034 $$((1 << ($(PIN) % 32))) > /tmp/qtest-gpio.fifo
+gpio:
+	./utils/gpio.py
 
 clean:
 	rm -f ./kernel8.img 
