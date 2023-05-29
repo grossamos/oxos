@@ -17,11 +17,9 @@ _start:
     ldr x4, =__bss_start
     ldr x5, =__bss_end
     mov x6, #0
-    b clear_check
 clear:
-    ldr x6, [x4]
+    str x6, [x4]
     add x4, x4, #1
-clear_check:
     cmp x4, x5
     blo clear
 

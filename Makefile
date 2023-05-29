@@ -57,6 +57,8 @@ qemu-debug: ${KERNEL_DEBUG_LINK} $(KERNEL_BIN) gpio-sock
 	qemu-system-aarch64 $(QEMU_ARGS) -S -s -kernel ${KERNEL_BIN}
 
 ext/hello/target/hello: ext/hello/src/main.rs
+
+ext/hello/target/hello: ext/hello/src/main.rs
 	cd ext/hello; \
 	cargo build --release --target=aarch64-unknown-none; \
 	cargo objcopy --release --target=aarch64-unknown-none -- -O binary target/hello

@@ -12,12 +12,17 @@ const SYSCALL_DRAW_PIXEL: u64   = 0x82;
 // The exception context as it is stored on the stack on exception entry.
 #[no_mangle]
 extern "C" fn execute_syscall(e: &mut ExceptionContext) {
-    uart_send_number(e.gpr[8]);
     match e.gpr[8] {
         SYSCALL_EXIT => syscall_exit(e),
         SYSCALL_UART => syscall_uart_send(e),
         SYSCALL_DRAW_PIXEL => syscall_draw_pixel(e),
-        _ => panic!("Unknown kernel function"),
+        _ => {
+            uart_send("\nSyscall number:");
+            uart_send_number(e.gpr[8]);
+            uart_send("ESR_EL2:");
+            uart_send_number(e.esr_el1);
+            panic!("Unknown kernel function");
+        },
     }
 }
 
@@ -35,7 +40,7 @@ fn syscall_exit(e: &mut ExceptionContext) {
     unsafe {
         asm!( 
             "adr x0, 2f",
-            "msr elr_el1, x0",
+            "msr elr_el2, x0",
             "eret",
             "2: nop",
         );
@@ -63,7 +68,6 @@ static mut FRAMEBUFFER: Option<Framebuffer> = None;
 
 fn syscall_draw_pixel(e: &mut ExceptionContext) {
     // initialize fb 
-    uart_send("are we sending...\n");
     unsafe {
         match FRAMEBUFFER {
             Some(_) => (),
@@ -71,7 +75,6 @@ fn syscall_draw_pixel(e: &mut ExceptionContext) {
                 FRAMEBUFFER = Some(Framebuffer::new());
             }
         }
-        uart_send("init done.. \n");
 
         match &FRAMEBUFFER {
             Some(fb) => {

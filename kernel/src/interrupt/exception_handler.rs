@@ -31,7 +31,7 @@ pub fn init_exception_vector() {
 
     let stack_el1: u64 = 0x80000 - 0x1000;
     unsafe {
-        asm!("msr vbar_el1, {}", in(reg) &__exception_vector as *const u64);
+        asm!("msr vbar_el2, {}", in(reg) &__exception_vector as *const u64);
         asm!("mov sp, {}", in(reg) stack_el1);
     }
 }

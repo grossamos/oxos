@@ -33,6 +33,8 @@ pub fn jump_to_next_program() {
             loop {}
         }
 
+        switch_to_instance_stack();
+
         asm!(
             "br {}", 
             in(reg) jump_in_point,

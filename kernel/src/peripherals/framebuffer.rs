@@ -1,6 +1,6 @@
 use core::{ptr::{read_volatile, write_volatile}, arch::asm};
 
-use super::{gpio::MMIO_BASE, uart_send};
+use super::{gpio::MMIO_BASE, uart_send, uart_send_number};
 
 const VIDEOCORE_MBOX: u32 = MMIO_BASE + 0x0000B880;
 const MBOX_READ: u32 = VIDEOCORE_MBOX + 0x0;
@@ -16,10 +16,12 @@ struct Mbox {
 }
 
 impl Mbox {
+
     fn new() -> Mbox {
+        let buffer = [8; 36];
         // This is being initialized on the stack... (we need it on a heap)
         return Mbox { 
-            buffer: [0; 36],
+            buffer,
         }
     }
 
@@ -58,24 +60,14 @@ pub struct Framebuffer {
 
 impl Framebuffer {
    pub fn new() -> Framebuffer {
-       unsafe {
-           asm!("nop");
-           asm!("nop");
-           asm!("nop");
-           asm!("nop");
-           asm!("nop");
-       }
-       uart_send("breakage");
         let mut mbox = Mbox::new();
-        uart_send("wtf!");
 
         mbox.buffer[0] = 36 * 4;   // buffer len
         mbox.buffer[1] = 0;        // request
 
         // set physical width + height
         mbox.buffer[2]  = 0x00048003;
-        //mbox.buffer[3]  = 8;
-        uart_send("brok");
+        mbox.buffer[3]  = 8;
         mbox.buffer[4]  = 8;
         mbox.buffer[5]  = 1024;     // set width
         mbox.buffer[6]  = 768;      // set height
@@ -134,7 +126,6 @@ impl Framebuffer {
             address: mbox.buffer[28] & (MMIO_BASE | 0x00FFFFFF),
         };
 
-        uart_send("sent");
         fb
     }
 
@@ -142,7 +133,6 @@ impl Framebuffer {
        unsafe {
            let offset = y * self.pitch + x * 4;
            write_volatile((self.address + offset) as *mut u32, color);
-           //write_volatile(self.address as *mut u32, 0x0000FF);
       }
    }
 }

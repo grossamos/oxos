@@ -2,6 +2,10 @@
 .macro CALL_WITH_CONTEXT handler
 __vector_\handler:
     // registers x0-x18 are caller saved and x29/x30 are the lr and fr
+    sub sp, sp, 16 * 3
+    stp x19, x20, [sp, 16 * 0]
+    str x21, [sp, 16 * 1]
+
     mov x20, sp
     ldr x19, =KERNEL_STACK_POINTER
     ldr x21, [x19]
@@ -29,9 +33,9 @@ __vector_\handler:
 
 	// Add the exception link register (ELR_EL1), saved program status (SPSR_EL1) and exception
 	// syndrome register (ESR_EL1).
-	mrs	x1,  ELR_EL1
-	mrs	x2,  SPSR_EL1
-	mrs	x3,  ESR_EL1
+	mrs	x1,  ELR_EL2
+	mrs	x2,  SPSR_EL2
+	mrs	x3,  ESR_EL2
 
 	stp	lr,  x1,  [sp, #16 * 15]
 	stp	x2,  x3,  [sp, #16 * 16]
@@ -102,8 +106,8 @@ __exception_restore_context:
 	ldr	w19,      [sp, #16 * 16]
 	ldp	lr,  x20, [sp, #16 * 15]
 
-	msr	SPSR_EL1, x19
-	msr	ELR_EL1,  x20
+	msr	SPSR_EL2, x19
+	msr	ELR_EL2,  x20
 
 	ldp	x0,  x1,  [sp, #16 * 0]
 	ldp	x2,  x3,  [sp, #16 * 1]
@@ -121,8 +125,11 @@ __exception_restore_context:
 	ldp	x26, x27, [sp, #16 * 13]
 	ldp	x28, x29, [sp, #16 * 14]
 
-    ldr w19, [sp, #16 * 17]
-    mov sp, x19
+    mov sp, x20
+
+    ldp x19, x20, [sp, 16 * 0]
+    ldr x21, [sp, 16 * 1]
+    add sp, sp, 16 * 3
 
 	eret
 

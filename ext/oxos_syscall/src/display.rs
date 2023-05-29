@@ -10,41 +10,25 @@ impl DisplayBuffer {
         DisplayBuffer {  }
     }
     pub fn draw_pixel(&self, x: u32, y: u32, color: u32) { 
-        //uart_send("starting...");
         unsafe {
-            let mut addr_save_0: u64;
-            let mut addr_save_1: u64;
-            let mut addr_save_2: u64;
-            let mut addr_save_3: u64;
             asm!(
-                "mov {}, x1",
-                "mov {}, x2",
-                "mov {}, x3",
-                "mov {}, x8",
-                "mov w1, {4:w}",
-                "mov w2, {5:w}",
-                "mov w3, {6:w}",
+                "sub sp, sp, 16 * 5",
+                "stp x1, x2, [sp, 16 * 0]",
+                "stp x3, x8, [sp, 16 * 1]",
+                "mov w1, {0:w}",
+                "mov w2, {1:w}",
+                "mov w3, {2:w}",
                 "mov x8, 0x82",
                 "svc 0x00",
-                out(reg) addr_save_0,
-                out(reg) addr_save_1,
-                out(reg) addr_save_2,
-                out(reg) addr_save_3,
                 in(reg) x,
                 in(reg) y,
                 in(reg) color,
             );
             asm!(
-                "mov x1, {}",
-                "mov x2, {}",
-                "mov x3, {}",
-                "mov x8, {}",
-                in(reg) addr_save_0,
-                in(reg) addr_save_1,
-                in(reg) addr_save_2,
-                in(reg) addr_save_3,
+                "ldp x1, x2, [sp, 16 * 0]",
+                "ldp x3, x8, [sp, 16 * 1]",
+                "add sp, sp, 16 * 5",
             );
-            uart_send("done");
         }
     }
 
