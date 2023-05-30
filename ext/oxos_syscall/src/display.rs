@@ -1,6 +1,8 @@
 use core::arch::asm;
 
-use crate::uart_send;
+
+const WIDTH: u32 = 1024;
+const HEIGHT: u32 = 768;
 
 pub struct DisplayBuffer {
 }
@@ -48,8 +50,7 @@ impl DisplayBuffer {
         }
     }
 
-    pub fn draw_str(&self, message: &str) {
-        let color = 0xFFFFFF;
+    pub fn draw_str(&self, message: &str, color: u32, base_x: u32, base_y: u32) {
         for letter_index in 0..message.len() {
             let x = (letter_index * BITMAP_SIZE) as u32 * BIT_SIZE // account for letter size
                          + BIT_SIZE * (letter_index as u32); // add space between letters
@@ -59,9 +60,25 @@ impl DisplayBuffer {
                 33 /* "!" */ => self.draw_bitmap(BITMAP[27], x, BIT_SIZE, color),
                 44 /* "," */ => self.draw_bitmap(BITMAP[28], x, BIT_SIZE, color),
                 46 /* "." */ => self.draw_bitmap(BITMAP[29], x, BIT_SIZE, color),
-                65..=91 => self.draw_bitmap(BITMAP[message.as_bytes()[letter_index] as usize - 65], x, BIT_SIZE, color),
+                65..=91 => self.draw_bitmap(BITMAP[message.as_bytes()[letter_index] as usize - 65], base_x + x, base_y + BIT_SIZE, color),
                 _ => (),
             };
+        }
+    }
+
+    pub fn clear_screen(&self) {
+        const FLASH_ANIMATION_WIDTH: u32 = 4;
+        for y in 0..(HEIGHT / FLASH_ANIMATION_WIDTH) {
+            for x in 0..WIDTH {
+                for i in 0..FLASH_ANIMATION_WIDTH {
+                    self.draw_pixel(x, (y * FLASH_ANIMATION_WIDTH) + i, 0xFFFFFF);
+                }
+            }
+            for x in 0..WIDTH {
+                for i in 0..FLASH_ANIMATION_WIDTH {
+                    self.draw_pixel(x, (y * FLASH_ANIMATION_WIDTH) + i, 0x000000);
+                }
+            }
         }
     }
 }

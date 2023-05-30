@@ -1,6 +1,6 @@
 use core::{arch::asm, ptr::read_volatile};
 
-use crate::peripherals::uart_send;
+use crate::peripherals::{uart_send, uart_send_number};
 
 extern "C" {
     static mut __end: u32;

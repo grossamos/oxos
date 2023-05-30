@@ -131,13 +131,13 @@ pub fn get_selected_gpio_regs(regs: [bool; 32]) -> [Option<bool>; 32] {
     for i in 0..regs.len() {
         if regs[i] {
             retrieved_values[i] = Some(get_gpio_value(i as u32));
-            if retrieved_values[i] == Some(true) {
-                uart_send("true: ");
-                uart_send_number(i as u64);
-            } else {
-                uart_send("false: ");
-                uart_send_number(i as u64);
-            }
+            //if retrieved_values[i] == Some(true) {
+                //uart_send("true: ");
+                //uart_send_number(i as u64);
+            //} else {
+                //uart_send("false: ");
+                //uart_send_number(i as u64);
+            //}
         }
     }
 

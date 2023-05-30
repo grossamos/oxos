@@ -26,12 +26,13 @@ default: release
 all: release
 release: $(KERNEL_BIN)
 hello: ext/hello/target/hello
+tic-tac-toe: ext/tic-tac-toe/target/tic-tac-toe
 
-${KERNEL_BIN}: $(RUST_SOURCES) ext/hello/target/hello utils/progprep.py
+${KERNEL_BIN}: $(RUST_SOURCES) utils/progprep.py ext/hello/target/hello ext/tic-tac-toe/target/tic-tac-toe
 	cd kernel; \
 	cargo build --release $(CARGO_OPTIONS); \
 	cargo objcopy --release $(CARGO_OPTIONS) -- -O binary ../$(KERNEL_BIN)
-	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello $(KERNEL_BIN)
+	utils/progprep.py $(KERNEL_BIN) ./ext/hello/target/hello ./ext/tic-tac-toe/target/tic-tac-toe $(KERNEL_BIN)
 
 ${KERNEL_RELEASE}: $(RUST_SOURCES)
 	cd kernel; \
@@ -55,6 +56,11 @@ ext/hello/target/hello: ext/hello/src/main.rs
 	cd ext/hello; \
 	cargo build --release --target=aarch64-unknown-none; \
 	cargo objcopy --release --target=aarch64-unknown-none -- -O binary target/hello
+
+ext/tic-tac-toe/target/tic-tac-toe: ext/tic-tac-toe/src/main.rs ext/tic-tac-toe/src/rendering.rs
+	cd ext/tic-tac-toe; \
+	cargo build --release --target=aarch64-unknown-none; \
+	cargo objcopy --release --target=aarch64-unknown-none -- -O binary target/tic-tac-toe
 
 gpio:
 	./utils/gpio.py

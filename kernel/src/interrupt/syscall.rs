@@ -109,7 +109,6 @@ fn syscall_wait_for_gpio_flip(e: &mut ExceptionContext) {
 fn syscall_get_reg_value(e: &mut ExceptionContext) {
     let mut regs = [false; 32];
 
-    uart_send_number(e.gpr[1]);
     for i in 0..32 {
         if e.gpr[1] & (1 << i) > 0 {
             regs[i] = true;
