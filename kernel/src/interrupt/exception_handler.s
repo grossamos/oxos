@@ -1,15 +1,13 @@
-// Macro to save registers (copied from rust embedded)
 .macro CALL_WITH_CONTEXT handler
 __vector_\handler:
     // registers x0-x18 are caller saved and x29/x30 are the lr and fr
-    sub sp, sp, 16 * 3
-    stp x19, x20, [sp, 16 * 0]
-    str x21, [sp, 16 * 1]
+    sub sp, sp, 16 * 2
+    stp x16, x17, [sp, 16 * 0]
 
-    mov x20, sp
-    ldr x19, =KERNEL_STACK_POINTER
-    ldr x21, [x19]
-    mov sp, x21
+    ldr x16, =KERNEL_STACK_POINTER
+    ldr x17, [x16]
+    mov x16, sp
+    mov sp, x17
 
     // Make room on the stack for the exception context.
 	sub	sp,  sp,  #16 * 18
@@ -125,11 +123,10 @@ __exception_restore_context:
 	ldp	x26, x27, [sp, #16 * 13]
 	ldp	x28, x29, [sp, #16 * 14]
 
-    mov sp, x20
+    mov sp, x16
 
-    ldp x19, x20, [sp, 16 * 0]
-    ldr x21, [sp, 16 * 1]
-    add sp, sp, 16 * 3
+    ldp x16, x17, [sp, 16 * 0]
+    add sp, sp, 16 * 2
 
 	eret
 

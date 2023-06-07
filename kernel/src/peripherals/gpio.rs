@@ -63,7 +63,6 @@ fn disable_gpio_pupd() {
             asm!("nop");
         }
     }
-    //wait_for_n_cycles(150);
 }
 
 fn change_gpio_clock_pupd_register(pin_number: u32, value: u32) {
@@ -76,7 +75,6 @@ fn change_gpio_clock_pupd_register(pin_number: u32, value: u32) {
             asm!("nop");
         }
     }
-    //wait_for_n_cycles(150);
 }
 
 pub fn _enable_blink() {
