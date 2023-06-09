@@ -1,12 +1,12 @@
-# OXos
+# oxos
 
 ![oxos demo](./.github/images/oxos.gif)
 
-OXos is a monolithic kernel that can run tic-tac-toe.
-It's process model is static and is based around a batch loader.
+oxos is a monolithic kernel that can run tic-tac-toe.
+Its process model is static and is based around a batch loader.
 It can only support one process at a time and the order of programms is set before boot.
-OXos has a synchronous interrupt-based Kernel API.
-Programms can use kernel functions by interacting with the OXos system library.
+oxos has a synchronous interrupt-based Kernel API.
+Programms can use kernel functions by interacting with the oxos system library.
 The kernel offers syscalls for GPIO, display and UART.
 
 ## Getting Started
@@ -21,13 +21,13 @@ Build OXos by running:
 make
 ```
 
-Launch OXos by running
+Launch oxos by running
 ```bash
 make gpio # in a seperate shell (or append "&")
 make qemu
 ```
 
-Debug OXos in gdb 
+Debug oxos in gdb 
 ```bash
 make gpio # in a seperate shell (or append "&")
 make qemu-debug
@@ -49,6 +49,6 @@ This repository is made up of multiple directories.
 ## References
 This project wouldn't be possible without a number of resources.
 The most important ones include:
-- Andrew Tanenbaums book on operating systems (see [here](https://csc-knu.github.io/sys-prog/books/Andrew%20S.%20Tanenbaum%20-%20Modern%20Operating%20Systems.pdf))
+- Andrew Tanenbaum's book on operating systems (see [here](https://csc-knu.github.io/sys-prog/books/Andrew%20S.%20Tanenbaum%20-%20Modern%20Operating%20Systems.pdf))
 - Philipp Oppermann's blog (see [here](https://os.phil-opp.com/))
 - Sergey Matyukevich's operating system development tutorial (see [here](https://github.com/s-matyukevich/raspberry-pi-os))
